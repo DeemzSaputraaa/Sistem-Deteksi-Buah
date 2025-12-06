@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FruitDetect - Deteksi Buah dengan AI</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <script>
+      // Inisialisasi aplikasi
+      document.addEventListener("DOMContentLoaded", function () {
+        console.log("Aplikasi FruitDetect dimuat");
+
+        // Tampilkan pesan loading
+        const loadingMessage = document.getElementById("loading-message");
+        if (loadingMessage) {
+          loadingMessage.style.display = "block";
+
+          // Sembunyikan pesan loading setelah beberapa detik
+          setTimeout(() => {
+            loadingMessage.style.display = "none";
+          }, 3000);
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="main-header">
+      <div class="container">
+        <nav class="navbar">
+          <div class="logo">
+            <i class="fas fa-apple-alt"></i>
+            <span>FruitDetect</span>
+          </div>
+          <ul class="nav-links">
+            <li><a href="#home">Beranda</a></li>
+            <li><a href="#cara-kerja">Cara Kerja</a></li>
+            <li><a href="#deteksi">Deteksi</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+      <div class="container">
+        <div class="hero-content">
+          <h1>Deteksi Buah dengan Kecerdasan Buatan</h1>
+          <p>
+            Temukan berbagai jenis buah dalam gambar Anda dengan teknologi AI
+            canggih
+          </p>
+          <a href="#deteksi" class="cta-button">
+            <i class="fas fa-play"></i> Coba Sekarang
+          </a>
+        </div>
+        <div class="hero-image">
+          <img
+            src="https://img.freepik.com/free-vector/fruit-collection_23-2147975564.jpg"
+            alt="Ilustrasi Buah-buahan"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Cara Kerja Section -->
+    <section class="cara-kerja" id="cara-kerja">
+      <div class="container">
+        <div class="section-header">
+          <h2>Cara Kerja</h2>
+          <p>Deteksi buah dengan mudah dalam 3 langkah sederhana</p>
+        </div>
+
+        <div class="cara-kerja-steps">
+          <div class="step">
+            <div class="step-content">
+              <div class="step-number">1</div>
+              <h3>Unggah Gambar</h3>
+              <p>Pilih gambar buah yang ingin dideteksi dari perangkat Anda</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-content">
+              <div class="step-number">2</div>
+              <h3>Proses Deteksi</h3>
+              <p>Sistem akan menganalisis gambar menggunakan AI canggih</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-content">
+              <div class="step-number">3</div>
+              <h3>Dapatkan Hasil</h3>
+              <p>Lihat hasil deteksi buah dengan akurasi tinggi</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta-container" style="text-align: center; margin-top: 60px">
+          <a href="#deteksi" class="cta-button" style="display: inline-block">
+            <i class="fas fa-play"></i> Coba Sekarang
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Detection Section -->
+    <section class="detection" id="deteksi">
+      <div class="container">
+        <div class="section-header">
+          <h2>Deteksi Buah</h2>
+          <p>Unggah gambar buah untuk memulai deteksi</p>
+        </div>
+
+        <div class="detection-container">
+          <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <h3>Seret dan lepas gambar di sini</h3>
+            <p>atau</p>
+            <label for="imageUpload" class="browse-btn"
+              >Pilih dari Perangkat</label
+            >
+            <input
+              type="file"
+              id="imageUpload"
+              accept="image/*"
+              style="display: none"
+            />
+            <p class="file-types">Format yang didukung: JPG, JPEG, PNG</p>
+          </div>
+
+          <div class="preview-container">
+            <div class="image-preview">
+              <img id="uploadedImage" style="display: none" />
+              <div id="placeholderText" class="placeholder">
+                <i class="fas fa-image"></i>
+                <p>Pratinjau gambar akan muncul di sini</p>
+              </div>
+              <canvas id="canvas"></canvas>
+            </div>
+
+            <div class="action-buttons">
+              <button id="detectBtn" class="detect-btn" disabled>
+                <i class="fas fa-search"></i> Deteksi Buah
+              </button>
+              <button id="resetBtn" class="reset-btn">
+                <i class="fas fa-redo"></i> Reset
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="results" class="results">
+          <h3>Hasil Deteksi</h3>
+          <div id="detectionResults" class="results-container">
+            <div class="no-results">
+              <i class="fas fa-info-circle"></i>
+              <p>Hasil deteksi akan muncul di sini</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Loading Message -->
+    <p
+      id="loading-message"
+      style="display: none; text-align: center; padding: 20px"
+    >
+      <i class="fas fa-spinner fa-spin"></i> Sedang memuat model... (mungkin
+      perlu beberapa saat)
+    </p>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-about">
+            <h3>Tentang FruitDetect</h3>
+            <p>
+              Platform berbasis AI untuk mendeteksi berbagai jenis buah dalam
+              gambar dengan akurasi tinggi.
+            </p>
+            <div class="social-links">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-github"></i></a>
+            </div>
+          </div>
+          <div class="footer-links">
+            <h3>Tautan Cepat</h3>
+            <ul>
+              <li><a href="#home">Beranda</a></li>
+              <li><a href="#tentang">Tentang Kami</a></li>
+              <li><a href="#cara-kerja">Cara Kerja</a></li>
+              <li><a href="#kontak">Kontak</a></li>
+              <li><a href="#privacy">Kebijakan Privasi</a></li>
+            </ul>
+          </div>
+          <div class="footer-contact">
+            <h3>Hubungi Kami</h3>
+            <p><i class="fas fa-envelope"></i> info@fruitdetect.com</p>
+            <p><i class="fas fa-phone"></i> +62 123 4567 890</p>
+            <p>
+              <i class="fas fa-map-marker-alt"></i> Jl. Contoh No. 123, Jakarta
+            </p>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2023 FruitDetect. Semua hak dilindungi.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
