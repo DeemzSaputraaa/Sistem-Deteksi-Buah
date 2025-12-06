@@ -108,11 +108,6 @@
     </div>
   </section>
 
-  <!-- Loading Message -->
-  <p id="loading-message" style="display: none;">
-    <i class="fas fa-spinner fa-spin"></i> Sedang memuat model... (mungkin perlu beberapa saat)
-  </p>
-
   <!-- Footer -->
   <footer class="main-footer">
     <div class="container">
@@ -155,27 +150,7 @@
     </div>
   </footer>
 
-  <!-- TensorFlow.js -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2"></script>
-  
   <!-- Custom JS -->
   <script src="script.js"></script>
-  
-  <script>
-    // Inisialisasi aplikasi
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('Halaman deteksi dimuat');
-      
-      // Tampilkan pesan loading
-      const loadingMessage = document.getElementById('loading-message');
-      if (loadingMessage) {
-        loadingMessage.style.display = 'block';
-      }
-      
-      // Setel judul halaman
-      document.title = 'Deteksi Buah - FruitDetect';
-    });
-  </script>
 </body>
 </html>

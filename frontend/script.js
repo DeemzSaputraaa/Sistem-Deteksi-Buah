@@ -1,344 +1,386 @@
-// Global variables
-let model;
-let currentImage = null;
-const fruits = ['apple', 'banana', 'orange', 'grapes', 'strawberry'];
+// Konfigurasi endpoint backend YOLOv11
+const API_URL = window.BACKEND_URL || "http://localhost:8000/api/detect";
 
-// Fungsi untuk mengupdate navigasi aktif
-function updateActiveNav() {
-    const scrollPosition = window.scrollY + 80; // Offset untuk header
-    const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-links a');
-    
-    // Reset semua link navigasi
-    navLinks.forEach(link => link.classList.remove('active'));
-    
-    // Cek setiap section
-    for (let i = 0; i < sections.length; i++) {
-        const section = sections[i];
-        const sectionTop = section.offsetTop;
-        const sectionHeight = section.offsetHeight;
-        
-        // Jika scroll position berada di dalam section ini
-        if (scrollPosition >= sectionTop - 100 && 
-            (i === sections.length - 1 || scrollPosition < sections[i + 1].offsetTop - 100)) {
-            
-            // Temukan link yang sesuai dan aktifkan
-            const sectionId = section.getAttribute('id');
-            const activeLink = document.querySelector(`.nav-links a[href="#${sectionId}"]`);
-            
-            if (activeLink) {
-                activeLink.classList.add('active');
-                return; // Keluar setelah menemukan section yang aktif
-            }
-        }
-    }
-    
-    // Default ke home jika di bagian paling atas
-    if (window.scrollY < 100) {
-        const homeLink = document.querySelector('.nav-links a[href="#home"]');
-        if (homeLink) homeLink.classList.add('active');
-    }
-}
-
-// Event listener untuk scroll dengan debounce
-let scrollTimeout;
-window.addEventListener('scroll', () => {
-    clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(updateActiveNav, 10);
-}, { passive: true });
-
-// Fungsi untuk smooth scroll
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-  anchor.addEventListener('click', function(e) {
-    e.preventDefault();
-    
-    const targetId = this.getAttribute('href');
-    if (targetId === '#') return;
-    
-    const targetElement = document.querySelector(targetId);
-    if (targetElement) {
-      // Update active nav sebelum scroll
-      document.querySelectorAll('.nav-links a').forEach(link => {
-        link.classList.remove('active');
-      });
-      this.classList.add('active');
-      
-      // Smooth scroll ke target
-      window.scrollTo({
-        top: targetElement.offsetTop - 80,
-        behavior: 'smooth'
-      });
-    }
-  });
-});
+// State
+let currentFile = null;
 
 // DOM Elements
-const startDetectionBtn = document.getElementById('startDetection');
-const detectionSection = document.getElementById('detection-section');
-const uploadArea = document.getElementById('uploadArea');
-const uploadInput = document.getElementById('imageUpload');
-const uploadedImage = document.getElementById('uploadedImage');
-const placeholderText = document.getElementById('placeholderText');
-const detectBtn = document.getElementById('detectBtn');
-const resetBtn = document.getElementById('resetBtn');
-const resultsDiv = document.getElementById('detectionResults');
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+const uploadArea = document.getElementById("uploadArea");
+const uploadInput = document.getElementById("imageUpload");
+const uploadedImage = document.getElementById("uploadedImage");
+const placeholderText = document.getElementById("placeholderText");
+const detectBtn = document.getElementById("detectBtn");
+const resetBtn = document.getElementById("resetBtn");
+const resultsDiv = document.getElementById("detectionResults");
+const canvas = document.getElementById("canvas");
+const ctx = canvas ? canvas.getContext("2d") : null;
 
-// Load COCO-SSD model
-async function loadModel() {
-  try {
-    console.log('Memulai memuat model...');
-    const loadingMessage = document.getElementById('loading-message') || document.createElement('div');
-    loadingMessage.id = 'loading-message';
-    loadingMessage.textContent = 'Sedang memuat model... (mungkin perlu beberapa saat)';
-    loadingMessage.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #2ecc71; color: white; padding: 10px 20px; border-radius: 5px; z-index: 1000;';
-    
-    if (!document.getElementById('loading-message')) {
-      document.body.appendChild(loadingMessage);
+// Peta label model -> nama standar
+const labelAliases = {
+  apel: "apple",
+  pisang: "banana",
+  jeruk: "orange",
+  anggur: "grapes",
+  strawberry: "strawberry",
+  semangka: "semangka",
+  melon: "melon",
+  pepaya: "pepaya",
+  jambu_biji: "jambu_biji",
+  alpukat: "alpukat",
+  salak: "salak",
+  mangga: "mangga",
+};
+
+// Data gizi per 100g (contoh dari TKPI; lengkapi sesuai kebutuhan)
+const nutritionData = {
+  semangka: {
+    nama: "Semangka",
+    energi: "28 kkal",
+    karbohidrat: "7.2 g",
+    protein: "0.5 g",
+    lemak: "0.2 g",
+    serat: "0.3 g",
+    vitamin_c: "6 mg",
+    beta_karoten: "0 ug",
+    kalium: "113 mg",
+  },
+  melon: {
+    nama: "Melon",
+    energi: "43 kkal",
+    karbohidrat: "10.8 g",
+    protein: "0.6 g",
+    lemak: "0.1 g",
+    serat: "0.7 g",
+    vitamin_c: "22 mg",
+    beta_karoten: "1 ug",
+    kalium: "267 mg",
+  },
+  pepaya: {
+    nama: "Pepaya",
+    energi: "24 kkal",
+    karbohidrat: "3.7 g",
+    protein: "0.2 g",
+    lemak: "0.2 g",
+    serat: "1.0 g",
+    vitamin_c: "60 mg",
+    beta_karoten: "1000 ug",
+    kalium: "0 mg",
+  },
+  apple: {
+    nama: "Apel",
+    energi: "58 kkal",
+    karbohidrat: "14.9 g",
+    protein: "0.3 g",
+    lemak: "0.4 g",
+    serat: "2.6 g",
+    vitamin_c: "5 mg",
+    beta_karoten: "90 ug",
+    kalium: "130 mg",
+  },
+  orange: {
+    nama: "Jeruk",
+    energi: "45 kkal",
+    karbohidrat: "11.2 g",
+    protein: "0.9 g",
+    lemak: "0.2 g",
+    serat: "1.4 g",
+    vitamin_c: "49 mg",
+    beta_karoten: "316 ug",
+    kalium: "140 mg",
+  },
+  jambu_biji: {
+    nama: "Jambu biji",
+    energi: "49 kkal",
+    karbohidrat: "12.2 g",
+    protein: "0.9 g",
+    lemak: "0.3 g",
+    serat: "5.6 g",
+    vitamin_c: "126 mg",
+    beta_karoten: "0 ug",
+    kalium: "417 mg",
+  },
+  alpukat: {
+    nama: "Alpukat",
+    energi: "85 kkal",
+    karbohidrat: "7.7 g",
+    protein: "0.9 g",
+    lemak: "6.5 g",
+    serat: "0.6 g",
+    vitamin_c: "13 mg",
+    beta_karoten: "180 ug",
+    kalium: "278 mg",
+  },
+  salak: {
+    nama: "Salak",
+    energi: "77 kkal",
+    karbohidrat: "20.3 g",
+    protein: "0.4 g",
+    lemak: "0.2 g",
+    serat: "0.3 g",
+    vitamin_c: "8 mg",
+    beta_karoten: "0 ug",
+    kalium: "113 mg",
+  },
+  banana: {
+    nama: "Pisang",
+    energi: "87 kkal",
+    karbohidrat: "22.0 g",
+    protein: "1.0 g",
+    lemak: "0.2 g",
+    serat: "0.9 g",
+    vitamin_c: "10 mg",
+    beta_karoten: "365 ug",
+    kalium: "358 mg",
+  },
+  mangga: {
+    nama: "Mangga",
+    energi: "133 kkal",
+    karbohidrat: "32.1 g",
+    protein: "1.0 g",
+    lemak: "0.1 g",
+    serat: "11.8 g",
+    vitamin_c: "61 mg",
+    beta_karoten: "0 ug",
+    kalium: "161 mg",
+  },
+};
+
+// -------- Navigasi --------
+function updateActiveNav() {
+  const scrollPosition = window.scrollY + 80;
+  const sections = document.querySelectorAll("section[id]");
+  const navLinks = document.querySelectorAll(".nav-links a");
+
+  navLinks.forEach((link) => link.classList.remove("active"));
+
+  for (let i = 0; i < sections.length; i++) {
+    const section = sections[i];
+    const sectionTop = section.offsetTop;
+    const nextTop =
+      i === sections.length - 1 ? Infinity : sections[i + 1].offsetTop;
+
+    if (scrollPosition >= sectionTop - 100 && scrollPosition < nextTop - 100) {
+      const sectionId = section.getAttribute("id");
+      const activeLink = document.querySelector(
+        `.nav-links a[href="#${sectionId}"]`
+      );
+      if (activeLink) {
+        activeLink.classList.add("active");
+        return;
+      }
     }
-    
-    model = await cocoSsd.load();
-    console.log('Model berhasil dimuat');
-    loadingMessage.style.display = 'none';
-    
-    // Enable start detection button after model is loaded
-    if (startDetectionBtn) {
-      startDetectionBtn.disabled = false;
-      startDetectionBtn.classList.add('active');
-      startDetectionBtn.style.opacity = '1';
-      startDetectionBtn.style.cursor = 'pointer';
-      console.log('Tombol deteksi diaktifkan');
-    }
-  } catch (error) {
-    console.error('Error saat memuat model:', error);
-    const errorMessage = document.createElement('div');
-    errorMessage.id = 'error-message';
-    errorMessage.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #e74c3c; color: white; padding: 10px 20px; border-radius: 5px; z-index: 1000;';
-    errorMessage.textContent = 'Gagal memuat model. Silakan muat ulang halaman.';
-    document.body.appendChild(errorMessage);
+  }
+
+  if (window.scrollY < 100) {
+    const homeLink = document.querySelector('.nav-links a[href="#home"]');
+    if (homeLink) homeLink.classList.add("active");
   }
 }
 
-// Initialize the application
-function init() {
-  console.log('Aplikasi diinisialisasi');
-  
-  // Load model when page loads
-  loadModel();
-  
-  // Initialize event listeners
-  setupEventListeners();
-}
+function setupNavigation() {
+  let scrollTimeout;
+  window.addEventListener(
+    "scroll",
+    () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(updateActiveNav, 10);
+    },
+    { passive: true }
+  );
 
-// Set up all event listeners
-function setupEventListeners() {
-  console.log('Menyiapkan event listeners...');
-  
-  // Start detection button click
-  if (startDetectionBtn) {
-    console.log('Menambahkan event listener untuk tombol startDetection');
-    startDetectionBtn.addEventListener('click', function() {
-      console.log('Tombol Mulai Deteksi ditekan');
-      if (detectionSection) {
-        detectionSection.scrollIntoView({ behavior: 'smooth' });
-        detectionSection.style.display = 'block';
-        console.log('Bagian deteksi ditampilkan');
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener("click", function (e) {
+      const targetId = this.getAttribute("href");
+      if (!targetId || targetId === "#") return;
+
+      const targetElement = document.querySelector(targetId);
+      if (targetElement) {
+        e.preventDefault();
+        document
+          .querySelectorAll(".nav-links a")
+          .forEach((link) => link.classList.remove("active"));
+        this.classList.add("active");
+        window.scrollTo({
+          top: targetElement.offsetTop - 80,
+          behavior: "smooth",
+        });
       }
     });
-    
-    // Set initial button state
-    startDetectionBtn.disabled = true;
-    startDetectionBtn.style.opacity = '0.7';
-    startDetectionBtn.style.cursor = 'not-allowed';
-  }
-  
-  // Upload area click
-  uploadArea.addEventListener('click', () => {
-    uploadInput.click();
   });
-  
-  // File input change
-  uploadInput.addEventListener('change', handleImageUpload);
-  
-  // Detect button click
-  detectBtn.addEventListener('click', () => {
-    if (uploadedImage.src) {
-      detectObjects(uploadedImage);
-    }
-  });
-  
-  // Reset button click
-  resetBtn.addEventListener('click', resetDetection);
-  
-  // Drag and drop functionality
-  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    uploadArea.addEventListener(eventName, preventDefaults, false);
-  });
-  
-  function preventDefaults(e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-  
-  ['dragenter', 'dragover'].forEach(eventName => {
-    uploadArea.addEventListener(eventName, highlight, false);
-  });
-  
-  ['dragleave', 'drop'].forEach(eventName => {
-    uploadArea.addEventListener(eventName, unhighlight, false);
-  });
-  
-  function highlight() {
-    uploadArea.classList.add('drag-over');
-  }
-  
-  function unhighlight() {
-    uploadArea.classList.remove('drag-over');
-  }
-  
-  // Handle dropped files
-  uploadArea.addEventListener('drop', handleDrop, false);
-  
-  function handleDrop(e) {
-    const dt = e.dataTransfer;
-    const files = dt.files;
-    if (files.length) {
-      handleFiles(files);
-    }
-  }
-  
-  function handleFiles(files) {
-    const file = files[0];
-    if (file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        displayImage(e.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-});
+}
 
-// Display uploaded image
+// -------- Upload & Preview --------
 function displayImage(src) {
+  if (!uploadedImage || !canvas || !ctx) return;
+
   uploadedImage.src = src;
-  uploadedImage.onload = function() {
-    // Show preview container
-    document.querySelector('.preview-container').style.display = 'block';
-    
-    // Set canvas size to match image
-    canvas.width = uploadedImage.width;
-    canvas.height = uploadedImage.height;
-    
-    // Hide placeholder text
-    placeholderText.style.display = 'none';
-    uploadedImage.style.display = 'block';
-    
-    // Enable detect button
-    detectBtn.disabled = false;
-    
-    // Scroll to preview
-    document.querySelector('.preview-container').scrollIntoView({ 
-      behavior: 'smooth', 
-      block: 'center' 
-    });
+  uploadedImage.onload = function () {
+    const previewContainer = document.querySelector(".preview-container");
+    if (previewContainer) previewContainer.style.display = "block";
+
+    canvas.width = uploadedImage.naturalWidth;
+    canvas.height = uploadedImage.naturalHeight;
+
+    if (placeholderText) placeholderText.style.display = "none";
+    uploadedImage.style.display = "block";
+    detectBtn && (detectBtn.disabled = false);
+
+    previewContainer?.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 }
 
-// Handle image upload
 function handleImageUpload(event) {
-  const file = event.target.files[0];
-  if (file && file.type.startsWith('image/')) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      displayImage(e.target.result);
-    };
-    reader.readAsDataURL(file);
-  }
+  const file = event.target.files?.[0];
+  processFile(file);
 }
 
-// Detect objects in the image
-async function detectObjects(image) {
-  // Show loading state
+function processFile(file) {
+  if (!file) return;
+  if (!file.type.startsWith("image/")) {
+    alert("File harus berupa gambar");
+    return;
+  }
+  currentFile = file;
+  const reader = new FileReader();
+  reader.onload = (e) => displayImage(e.target.result);
+  reader.readAsDataURL(file);
+}
+
+function setupUploadArea() {
+  if (!uploadArea || !uploadInput || !detectBtn || !resetBtn) return;
+
+  detectBtn.disabled = true;
+
+  uploadArea.addEventListener("click", () => uploadInput.click());
+  uploadInput.addEventListener("change", handleImageUpload);
+  detectBtn.addEventListener("click", detectObjects);
+  resetBtn.addEventListener("click", resetDetection);
+
+  ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+    uploadArea.addEventListener(
+      eventName,
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      },
+      false
+    );
+  });
+
+  ["dragenter", "dragover"].forEach((eventName) => {
+    uploadArea.addEventListener(
+      eventName,
+      () => uploadArea.classList.add("drag-over"),
+      false
+    );
+  });
+
+  ["dragleave", "drop"].forEach((eventName) => {
+    uploadArea.addEventListener(
+      eventName,
+      () => uploadArea.classList.remove("drag-over"),
+      false
+    );
+  });
+
+  uploadArea.addEventListener(
+    "drop",
+    (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length) processFile(files[0]);
+    },
+    false
+  );
+}
+
+// -------- Deteksi Backend --------
+async function detectObjects() {
+  if (!currentFile || !uploadedImage || !ctx) return;
+
   detectBtn.disabled = true;
   detectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-  
+
   try {
-    // Run object detection
-    const predictions = await model.detect(image);
-    
-    // Filter only fruit predictions
-    const fruitPredictions = predictions.filter(prediction => 
-      fruits.includes(prediction.class.toLowerCase())
-    );
-    
-    // Draw bounding boxes
-    drawResults(fruitPredictions, image);
-    
-    // Display results
-    displayResults(fruitPredictions);
-    
-    // Scroll to results
+    const form = new FormData();
+    form.append("image", currentFile);
+
+    const response = await fetch(API_URL, { method: "POST", body: form });
+    if (!response.ok) {
+      const msg = await response.text();
+      throw new Error(msg || "Deteksi gagal");
+    }
+
+    const { predictions = [] } = await response.json();
+    const normalizedPredictions = predictions.map((p) => ({
+      ...p,
+      normalizedClass: normalizeLabel(p.class),
+    }));
+
+    drawResults(normalizedPredictions, uploadedImage);
+    displayResults(normalizedPredictions);
+
     setTimeout(() => {
-      document.getElementById('results').scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }, 500);
-    
+      document
+        .getElementById("results")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 300);
   } catch (error) {
-    console.error('Error detecting objects:', error);
-    resultsDiv.innerHTML = `
-      <div class="error-message">
-        <i class="fas fa-exclamation-circle"></i>
-        <p>Terjadi kesalahan saat mendeteksi objek. Silakan coba lagi.</p>
-      </div>
-    `;
+    console.error("Error detecting objects:", error);
+    if (resultsDiv) {
+      resultsDiv.innerHTML = `
+        <div class="error-message">
+          <i class="fas fa-exclamation-circle"></i>
+          <p>Terjadi kesalahan saat mendeteksi objek. ${
+            error.message || "Silakan coba lagi."
+          }</p>
+        </div>
+      `;
+    }
   } finally {
-    // Reset button state
     detectBtn.disabled = false;
-    detectBtn.innerHTML = '<i class="fas fa-search"></i> Deteksi Ulang';
+    detectBtn.innerHTML = '<i class="fas fa-search"></i> Deteksi Buah';
   }
 }
 
-// Draw bounding boxes and labels
+// Menggambar bounding box dari backend (bbox: [x1, y1, x2, y2])
 function drawResults(predictions, image) {
-  // Clear previous drawings
+  if (!ctx || !canvas) return;
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  // Draw the image
   ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-  
-  // Draw bounding boxes and labels
-  predictions.forEach(prediction => {
-    const [x, y, width, height] = prediction.bbox;
+
+  predictions.forEach((prediction) => {
+    const [x1, y1, x2, y2] = prediction.bbox;
+    const width = x2 - x1;
+    const height = y2 - y1;
     const score = Math.round(prediction.score * 100);
-    const className = prediction.class.charAt(0).toUpperCase() + prediction.class.slice(1);
-    const text = `${className} ${score}%`;
-    
-    // Draw bounding box
-    ctx.strokeStyle = '#2ecc71';
+    const normalized = prediction.normalizedClass || prediction.class;
+    const nutrition = getNutrition(normalized);
+    const displayName =
+      nutrition?.nama ||
+      normalized.charAt(0).toUpperCase() + normalized.slice(1);
+    const text = `${displayName} ${score}%`;
+
+    ctx.strokeStyle = "#2ecc71";
     ctx.lineWidth = 2;
-    ctx.strokeRect(x, y, width, height);
-    
-    // Draw label background
+    ctx.strokeRect(x1, y1, width, height);
+
     const textWidth = ctx.measureText(text).width + 10;
     const textHeight = 20;
-    ctx.fillStyle = 'rgba(46, 204, 113, 0.9)';
-    ctx.fillRect(x - 1, y - textHeight, textWidth, textHeight);
-    
-    // Draw label text
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 12px Arial';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(text, x + 5, y - (textHeight / 2) + 2);
+    ctx.fillStyle = "rgba(46, 204, 113, 0.9)";
+    ctx.fillRect(x1 - 1, y1 - textHeight, textWidth, textHeight);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 12px Arial";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, x1 + 5, y1 - textHeight / 2 + 2);
   });
 }
 
-// Display detection results
 function displayResults(predictions) {
-  if (predictions.length === 0) {
+  if (!resultsDiv) return;
+
+  if (!predictions.length) {
     resultsDiv.innerHTML = `
       <div class="no-results">
         <i class="fas fa-search"></i>
@@ -347,28 +389,23 @@ function displayResults(predictions) {
     `;
     return;
   }
-  
-  // Count occurrences of each fruit and calculate average accuracy
+
   const fruitData = {};
-  predictions.forEach(prediction => {
-    const fruit = prediction.class.toLowerCase();
-    if (!fruitData[fruit]) {
-      fruitData[fruit] = {
-        count: 0,
-        totalScore: 0
-      };
-    }
-    fruitData[fruit].count++;
-    fruitData[fruit].totalScore += prediction.score;
+  predictions.forEach((prediction) => {
+    const normalized = normalizeLabel(prediction.class);
+    if (!fruitData[normalized])
+      fruitData[normalized] = { count: 0, totalScore: 0 };
+    fruitData[normalized].count++;
+    fruitData[normalized].totalScore += prediction.score;
   });
-  
-  // Create results HTML
+
   let resultsHTML = '<div class="results-grid">';
-  
   Object.entries(fruitData).forEach(([fruit, data]) => {
-    const fruitName = fruit.charAt(0).toUpperCase() + fruit.slice(1);
+    const nutrition = getNutrition(fruit);
+    const fruitName =
+      nutrition?.nama || fruit.charAt(0).toUpperCase() + fruit.slice(1);
     const averageScore = data.totalScore / data.count;
-    
+
     resultsHTML += `
       <div class="result-card">
         <div class="result-icon">
@@ -377,135 +414,109 @@ function displayResults(predictions) {
         <div class="result-details">
           <h4>${fruitName}</h4>
           <div class="result-stats">
-            <span class="count">${data.count} ${data.count > 1 ? 'buah' : 'buah'}</span>
-            <span class="divider">•</span>
-            <span class="accuracy">${Math.round(averageScore * 100)}% akurat</span>
+            <span class="count">${data.count} buah</span>
+            <span class="divider">/</span>
+            <span class="accuracy">${Math.round(
+              averageScore * 100
+            )}% akurat</span>
+          </div>
+          <div class="nutrition">
+            ${
+              nutrition
+                ? renderNutrition(nutrition)
+                : "<em>Data gizi belum tersedia</em>"
+            }
           </div>
         </div>
       </div>
     `;
   });
-  
-  resultsHTML += '</div>';
+
+  resultsHTML += "</div>";
   resultsDiv.innerHTML = resultsHTML;
 }
 
-// Get icon for each fruit
 function getFruitIcon(fruit) {
   const icons = {
-    'apple': 'apple-alt',
-    'banana': 'banana',
-    'orange': 'orange',
-    'grapes': 'grapes',
-    'strawberry': 'strawberry'
+    apple: "apple-alt",
+    banana: "lemon", // ikon terdekat
+    orange: "lemon",
+    grapes: "wine-bottle",
+    strawberry: "seedling",
+    semangka: "seedling",
+    melon: "seedling",
+    pepaya: "seedling",
+    jambu_biji: "seedling",
+    alpukat: "seedling",
+    salak: "seedling",
+    mangga: "seedling",
   };
-  return icons[fruit] || 'fruit';
+  return icons[fruit] || "apple-alt";
 }
 
-// Reset detection
+function normalizeLabel(label) {
+  if (!label) return "";
+  // Bersihkan metadata (mis. nama project/versi) yang kadang dikirim model
+  const lower = label.toLowerCase().split("-")[0].trim();
+  return labelAliases[lower] || lower;
+}
+
+function getNutrition(fruitKey) {
+  return nutritionData[fruitKey];
+}
+
+function renderNutrition(nutrition) {
+  const fields = [
+    ["energi", "Energi"],
+    ["karbohidrat", "Karbohidrat"],
+    ["protein", "Protein"],
+    ["lemak", "Lemak"],
+    ["serat", "Serat"],
+    ["vitamin_c", "Vitamin C"],
+    ["beta_karoten", "Beta karoten"],
+    ["kalium", "Kalium"],
+  ];
+
+  const items = fields
+    .filter(([key]) => nutrition[key])
+    .map(([key, label]) => `<li>${label}: ${nutrition[key]}</li>`)
+    .join("");
+
+  return `<ul class="nutrition-list">${items}</ul>`;
+}
+
 function resetDetection() {
-  // Reset file input
-  uploadInput.value = '';
-  
-  // Reset image and canvas
-  uploadedImage.src = '';
-  uploadedImage.style.display = 'none';
-  placeholderText.style.display = 'flex';
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  // Reset buttons
-  detectBtn.disabled = true;
-  detectBtn.innerHTML = '<i class="fas fa-search"></i> Deteksi Buah';
-  
-  // Hide preview container
-  document.querySelector('.preview-container').style.display = 'none';
-  
-  // Reset results
-  resultsDiv.innerHTML = `
-    <div class="no-results">
-      <i class="fas fa-info-circle"></i>
-      <p>Hasil deteksi akan muncul di sini</p>
-    </div>
-  `;
-  imageUpload.value = '';
-  currentImage = null;
-}
+  if (uploadInput) uploadInput.value = "";
+  currentFile = null;
 
-// 9. Inisialisasi event listeners
-function init() {
-  // Event listener untuk upload file
-  imageUpload.addEventListener('change', handleImageUpload);
-  
-  // Event listener untuk tombol deteksi
-  detectBtn.addEventListener('click', () => {
-    if (currentImage) {
-      detectObjects(currentImage);
-    }
-  });
-  
-  // Muat model
-  loadModel();
-}
-
-// Inisialisasi saat halaman dimuat
-document.addEventListener('DOMContentLoaded', () => {
-    // Set active nav saat pertama kali load
-    updateActiveNav();
-    
-    // Set ulang active nav setelah semua resource selesai dimuat
-    window.addEventListener('load', updateActiveNav);
-    
-    // Handle klik pada menu navigasi
-    document.querySelectorAll('.nav-links a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            const targetId = this.getAttribute('href');
-            if (targetId === '#') return;
-            
-            const targetSection = document.querySelector(targetId);
-            if (targetSection) {
-                e.preventDefault();
-                
-                // Update active nav
-                document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Scroll ke section
-                window.scrollTo({
-                    top: targetSection.offsetTop - 80,
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
-});
-
-// Start the application when the DOM is fully loaded
-console.log('Memeriksa status DOM...');
-if (document.readyState === 'loading') {
-  console.log('DOM masih loading, menambahkan event listener');
-  document.addEventListener('DOMContentLoaded', init);
-} else {
-  console.log('DOM sudah siap, langsung jalankan init');
-  init();
-}
-
-// Ekspor fungsi-fungsi yang diperlukan untuk testing
-try {
-  if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-      loadModel,
-      init,
-      setupEventListeners,
-      displayImage,
-      handleImageUpload,
-      detectObjects,
-      drawResults,
-      displayResults,
-      getFruitIcon,
-      resetDetection
-    };
+  if (uploadedImage) {
+    uploadedImage.src = "";
+    uploadedImage.style.display = "none";
   }
-} catch (e) {
-  // Tidak ada module exports di browser, abaikan
-  console.log('Running in browser environment');
+
+  if (placeholderText) placeholderText.style.display = "flex";
+  if (ctx && canvas) ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (detectBtn) {
+    detectBtn.disabled = true;
+    detectBtn.innerHTML = '<i class="fas fa-search"></i> Deteksi Buah';
+  }
+
+  const previewContainer = document.querySelector(".preview-container");
+  if (previewContainer) previewContainer.style.display = "none";
+
+  if (resultsDiv) {
+    resultsDiv.innerHTML = `
+      <div class="no-results">
+        <i class="fas fa-info-circle"></i>
+        <p>Hasil deteksi akan muncul di sini</p>
+      </div>
+    `;
+  }
 }
+
+// -------- Init --------
+document.addEventListener("DOMContentLoaded", () => {
+  updateActiveNav();
+  setupNavigation();
+  setupUploadArea();
+});
