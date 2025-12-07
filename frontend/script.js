@@ -14,6 +14,8 @@ const resetBtn = document.getElementById("resetBtn");
 const resultsDiv = document.getElementById("detectionResults");
 const canvas = document.getElementById("canvas");
 const ctx = canvas ? canvas.getContext("2d") : null;
+const menuToggle = document.querySelector(".menu-toggle");
+const navLinks = document.querySelector(".nav-links");
 
 // Peta label model -> nama standar
 const labelAliases = {
@@ -207,6 +209,18 @@ function setupNavigation() {
       }
     });
   });
+
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("open");
+    });
+
+    navLinks.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        navLinks.classList.remove("open");
+      });
+    });
+  }
 }
 
 // -------- Upload & Preview --------
@@ -477,12 +491,19 @@ function renderNutrition(nutrition) {
     ["kalium", "Kalium"],
   ];
 
-  const items = fields
-    .filter(([key]) => nutrition[key])
-    .map(([key, label]) => `<li>${label}: ${nutrition[key]}</li>`)
+  const headers = fields.map(([, label]) => `<th>${label}</th>`).join("");
+  const values = fields
+    .map(([key]) => `<td>${nutrition[key] || "-"}</td>`)
     .join("");
 
-  return `<ul class="nutrition-list">${items}</ul>`;
+  return `
+    <table class="nutrition-table">
+      <tbody>
+        <tr>${headers}</tr>
+        <tr>${values}</tr>
+      </tbody>
+    </table>
+  `;
 }
 
 function resetDetection() {

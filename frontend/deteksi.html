@@ -1,156 +1,142 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Deteksi Buah - FruitDetect</title>
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.ico">
-  
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="style.css">
-  
-  <style>
-    /* Additional styles for detection page */
-    .detection-page {
-      padding: 80px 0 40px;
-    }
-    
-    .back-to-home {
-      display: inline-block;
-      margin-bottom: 20px;
-      color: #2ecc71;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    
-    .back-to-home i {
-      margin-right: 8px;
-    }
-  </style>
-</head>
-<body>
-  <!-- Header -->
-  <header class="main-header">
-    <div class="container">
-      <nav class="navbar">
-        <div class="logo">
-          <i class="fas fa-apple-alt"></i>
-          <span>FruitDetect</span>
-        </div>
-        <ul class="nav-links">
-          <li><a href="index.html">Beranda</a></li>
-          <li><a href="deteksi.html" class="active">Deteksi Buah</a></li>
-          <li><a href="#tentang">Tentang</a></li>
-          <li><a href="#kontak">Kontak</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deteksi Buah - FruitDetect</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.ico" />
 
-  <!-- Detection Section -->
-  <section class="detection-page">
-    <div class="container">
-      <a href="index.html" class="back-to-home">
-        <i class="fas fa-arrow-left"></i> Kembali ke Beranda
-      </a>
-      
-      <div class="section-header">
-        <h1>Deteksi Buah</h1>
-        <p>Unggah gambar buah untuk memulai deteksi</p>
-      </div>
-      
-      <div class="detection-container">
-        <div class="upload-area" id="uploadArea">
-          <div class="upload-icon">
-            <i class="fas fa-cloud-upload-alt"></i>
-          </div>
-          <h3>Seret dan lepas gambar di sini</h3>
-          <p>atau</p>
-          <label for="imageUpload" class="browse-btn">Pilih dari Perangkat</label>
-          <input type="file" id="imageUpload" accept="image/*" style="display: none;" />
-          <p class="file-types">Format yang didukung: JPG, JPEG, PNG</p>
-        </div>
-        
-        <div class="preview-container">
-          <div class="image-preview">
-            <img id="uploadedImage" style="display: none;" />
-            <div id="placeholderText" class="placeholder">
-              <i class="fas fa-image"></i>
-              <p>Pratinjau gambar akan muncul di sini</p>
-            </div>
-            <canvas id="canvas"></canvas>
-          </div>
-          
-          <div class="action-buttons">
-            <button id="detectBtn" class="detect-btn" disabled>
-              <i class="fas fa-search"></i> Deteksi Buah
-            </button>
-            <button id="resetBtn" class="reset-btn">
-              <i class="fas fa-redo"></i> Reset
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      <div id="results" class="results">
-        <h3>Hasil Deteksi</h3>
-        <div id="detectionResults" class="results-container">
-          <div class="no-results">
-            <i class="fas fa-info-circle"></i>
-            <p>Hasil deteksi akan muncul di sini</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
 
-  <!-- Footer -->
-  <footer class="main-footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-about">
-          <h3>Tentang FruitDetect</h3>
-          <p>
-            Platform berbasis AI untuk mendeteksi berbagai jenis buah dalam
-            gambar dengan akurasi tinggi.
-          </p>
-          <div class="social-links">
-            <a href="#"><i class="fab fa-facebook"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-github"></i></a>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css" />
+
+    <style>
+      /* Additional styles for detection page */
+      .detection-page {
+        padding: 80px 0 40px;
+      }
+
+      .back-to-home {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #2ecc71;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .back-to-home i {
+        margin-right: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="main-header">
+      <div class="container">
+        <nav class="navbar">
+          <div class="logo">
+            <i class="fas fa-apple-alt"></i>
+            <span>FruitDetect</span>
           </div>
-        </div>
-        
-        <div class="footer-links">
-          <h3>Tautan Cepat</h3>
-          <ul>
+          <button class="menu-toggle" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <ul class="nav-links">
             <li><a href="index.html">Beranda</a></li>
-            <li><a href="#">Deteksi Buah</a></li>
-            <li><a href="#tentang">Tentang Kami</a></li>
+            <li><a href="deteksi.html" class="active">Deteksi Buah</a></li>
+            <li><a href="#tentang">Tentang</a></li>
             <li><a href="#kontak">Kontak</a></li>
           </ul>
-        </div>
-        
-        <div class="footer-contact">
-          <h3>Hubungi Kami</h3>
-          <p><i class="fas fa-envelope"></i> info@fruitdetect.com</p>
-          <p><i class="fas fa-phone"></i> +62 123 4567 890</p>
-          <p><i class="fas fa-map-marker-alt"></i> Jl. Contoh No. 123, Kota Bandung</p>
-        </div>
+        </nav>
       </div>
-      
-      <div class="footer-bottom">
-        <p>&copy; 2023 FruitDetect. Semua Hak Dilindungi.</p>
-      </div>
-    </div>
-  </footer>
+    </header>
 
-  <!-- Custom JS -->
-  <script src="script.js"></script>
-</body>
+    <!-- Detection Section -->
+    <section class="detection-page">
+      <div class="container">
+        <a href="index.html" class="back-to-home">
+          <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+        </a>
+
+        <div class="section-header">
+          <h1>Deteksi Buah</h1>
+          <p>Unggah gambar buah untuk memulai deteksi</p>
+        </div>
+
+        <div class="detection-container">
+          <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <h3>Seret dan lepas gambar di sini</h3>
+            <p>atau</p>
+            <label for="imageUpload" class="browse-btn"
+              >Pilih dari Perangkat</label
+            >
+            <input
+              type="file"
+              id="imageUpload"
+              accept="image/*"
+              style="display: none"
+            />
+            <p class="file-types">Format yang didukung: JPG, JPEG, PNG</p>
+          </div>
+
+          <div class="preview-container">
+            <div class="image-preview">
+              <img id="uploadedImage" style="display: none" />
+              <div id="placeholderText" class="placeholder">
+                <i class="fas fa-image"></i>
+                <p>Pratinjau gambar akan muncul di sini</p>
+              </div>
+              <canvas id="canvas"></canvas>
+            </div>
+
+            <div class="action-buttons">
+              <button id="detectBtn" class="detect-btn" disabled>
+                <i class="fas fa-search"></i> Deteksi Buah
+              </button>
+              <button id="resetBtn" class="reset-btn">
+                <i class="fas fa-redo"></i> Reset
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="results" class="results">
+          <h3>Hasil Deteksi</h3>
+          <div id="detectionResults" class="results-container">
+            <div class="no-results">
+              <i class="fas fa-info-circle"></i>
+              <p>Hasil deteksi akan muncul di sini</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+      <div class="container">
+        <div class="footer-bottom">
+          <p>
+            Copyright &copy; 2025 <span class="footer-brand">FruitDetect</span>.
+            All rights reserved. Built by
+            <span class="footer-author">Dimas Edwin Saputra</span>.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+  </body>
 </html>
