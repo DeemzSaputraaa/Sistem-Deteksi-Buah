@@ -188,6 +188,16 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
+  max-width: 520px;
+}
+
+.hero-image img {
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  object-fit: contain;
 }
 
 .hero-image img {
@@ -928,6 +938,7 @@ html {
   border-top: 1px solid #2f343c;
   margin-top: 0.75rem;
   padding: 1rem 0 0.5rem;
+  text-align: center;
 }
 
 .footer-bottom p {
@@ -946,15 +957,29 @@ html {
   font-weight: 600;
 }
 
+.main-footer .container {
+  display: flex;
+  justify-content: center;
+}
+
 /* Responsive Design */
 @media (max-width: 992px) {
   .hero .container {
     flex-direction: column;
     text-align: center;
+    gap: 2.5rem;
   }
 
   .hero-content {
     margin-bottom: 3rem;
+    order: 1;
+  }
+
+  .hero-image {
+    order: 2;
+    max-width: 420px;
+    width: 100%;
+    display: none;
   }
 
   .menu-toggle {
@@ -991,6 +1016,16 @@ html {
   .detection-container {
     padding: 1.5rem;
   }
+
+  .cara-kerja {
+    min-height: auto;
+    padding: 4.5rem 0 3.5rem;
+  }
+
+  .detection-section {
+    min-height: auto;
+    padding: 4rem 0 3.5rem;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1011,6 +1046,34 @@ html {
 
   .hero h1 {
     font-size: 2.2rem;
+    line-height: 1.3;
+  }
+
+  .hero p {
+    font-size: 1.05rem;
+  }
+
+  .hero .container {
+    gap: 2rem;
+  }
+
+  .hero-image {
+    max-width: 360px;
+    display: none;
+  }
+
+  .hero-content {
+    margin-bottom: 2rem;
+  }
+
+  .cara-kerja {
+    min-height: auto;
+    padding: 4rem 0 3rem;
+  }
+
+  .detection-section {
+    min-height: auto;
+    padding: 3.75rem 0 3rem;
   }
 
   .footer-content {
@@ -1051,11 +1114,22 @@ html {
   .action-buttons {
     flex-direction: column;
   }
+
+  .cara-kerja {
+    min-height: auto;
+    padding: 4rem 0 3rem;
+  }
+
+  .detection-section {
+    min-height: auto;
+    padding: 3.75rem 0 3rem;
+  }
 }
 
 @media (max-width: 576px) {
   .hero h1 {
     font-size: 1.8rem;
+    line-height: 1.3;
   }
 
   .hero p {
@@ -1066,8 +1140,38 @@ html {
     padding: 0.6rem 1.5rem;
   }
 
+  .hero {
+    padding: 5.5rem 0 4.75rem;
+    min-height: auto;
+  }
+
+  .hero-image {
+    max-width: 320px;
+    display: none;
+  }
+
+  .hero .container {
+    gap: 1.75rem;
+  }
+
   .container {
     padding: 0 14px;
+  }
+
+  .cara-kerja {
+    padding: 3.5rem 0 3rem;
+    margin-top: 1.5rem;
+    min-height: auto;
+  }
+
+  .cara-kerja .section-header {
+    margin-top: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .detection-section {
+    min-height: auto;
+    padding: 3.25rem 0 2.75rem;
   }
 
   .detection-container {
