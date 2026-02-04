@@ -411,20 +411,57 @@ html {
 .preview-container {
   display: none;
   margin-top: 2rem;
+  text-align: center;
+}
+
+.mode-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.mode-button {
+  border: 1px solid #d1d8e0;
+  background: #ffffff;
+  color: #2c3e50;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-button:hover {
+  border-color: #2ecc71;
+  color: #2ecc71;
+  transform: translateY(-1px);
+}
+
+.mode-button.active {
+  background: #2ecc71;
+  border-color: #2ecc71;
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(46, 204, 113, 0.25);
 }
 
 .image-preview {
   position: relative;
-  width: 100%;
   max-width: 600px;
   margin: 0 auto 2rem;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: inline-block;
+  width: auto;
 }
 
-#uploadedImage {
+.image-preview img {
   max-width: 100%;
+  max-height: 420px;
+  width: auto;
+  height: auto;
   display: block;
 }
 
