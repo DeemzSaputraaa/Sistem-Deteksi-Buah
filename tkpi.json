@@ -1,0 +1,122 @@
+[
+  {
+    "buah": "Semangka",
+    "air_g": "92,0",
+    "energi_kcal": "28,0",
+    "karbohidratg": "6,9",
+    "protein_g": "0,5",
+    "lemak_total_g": "0,2",
+    "serat_pangan_g": "0,4",
+    "vitamin_c_mg": "6,0",
+    "vitamin_a___karoten_\u00b5g": "590,0",
+    "kalium_mg": "93,8"
+  },
+  {
+    "buah": "Melon",
+    "air_g": "91,0",
+    "energi_kcal": "37,0",
+    "karbohidratg": "7,8",
+    "protein_g": "0,6",
+    "lemak_total_g": "0,4",
+    "serat_pangan_g": "1,0",
+    "vitamin_c_mg": "58,1",
+    "vitamin_a___karoten_\u00b5g": "0,0",
+    "kalium_mg": "167,0"
+  },
+  {
+    "buah": "Pepaya",
+    "air_g": "87,0",
+    "energi_kcal": "46,0",
+    "karbohidratg": "12,2",
+    "protein_g": "0,5",
+    "lemak_total_g": "0,1",
+    "serat_pangan_g": "1,6",
+    "vitamin_c_mg": "78,0",
+    "vitamin_a___karoten_\u00b5g": "365,0",
+    "kalium_mg": "221,0"
+  },
+  {
+    "buah": "Apel",
+    "air_g": "84,0",
+    "energi_kcal": "58,0",
+    "karbohidratg": "14,9",
+    "protein_g": "0,3",
+    "lemak_total_g": "0,4",
+    "serat_pangan_g": "2,6",
+    "vitamin_c_mg": "5,0",
+    "vitamin_a___karoten_\u00b5g": "90,0",
+    "kalium_mg": "130,0"
+  },
+  {
+    "buah": "Jeruk",
+    "air_g": "87,0",
+    "energi_kcal": "45,0",
+    "karbohidratg": "11,2",
+    "protein_g": "0,9",
+    "lemak_total_g": "0,2",
+    "serat_pangan_g": "1,4",
+    "vitamin_c_mg": "49,0",
+    "vitamin_a___karoten_\u00b5g": "190,0",
+    "kalium_mg": "472,1"
+  },
+  {
+    "buah": "Jambu biji",
+    "air_g": "86,0",
+    "energi_kcal": "64,0",
+    "karbohidratg": "12,2",
+    "protein_g": "0,9",
+    "lemak_total_g": "0,3",
+    "serat_pangan_g": "2,4",
+    "vitamin_c_mg": "87,0",
+    "vitamin_a___karoten_\u00b5g": "25,0",
+    "kalium_mg": "52,8"
+  },
+  {
+    "buah": "Alpukat",
+    "air_g": "84,0",
+    "energi_kcal": "85,0",
+    "karbohidratg": "7,7",
+    "protein_g": "0,9",
+    "lemak_total_g": "6,5",
+    "serat_pangan_g": "0,6",
+    "vitamin_c_mg": "13,0",
+    "vitamin_a___karoten_\u00b5g": "180,0",
+    "kalium_mg": "278,0"
+  },
+  {
+    "buah": "Salak",
+    "air_g": "78,0",
+    "energi_kcal": "77,0",
+    "karbohidratg": "20,9",
+    "protein_g": "0,4",
+    "lemak_total_g": "0,7",
+    "serat_pangan_g": "0,0",
+    "vitamin_c_mg": "93,0",
+    "vitamin_a___karoten_\u00b5g": "0,0",
+    "kalium_mg": "4,0"
+  },
+  {
+    "buah": "Pisang",
+    "air_g": "64,0",
+    "energi_kcal": "127,0",
+    "karbohidratg": "33,6",
+    "protein_g": "1,4",
+    "lemak_total_g": "0,2",
+    "serat_pangan_g": "1,4",
+    "vitamin_c_mg": "2,0",
+    "vitamin_a___karoten_\u00b5g": "79,0",
+    "kalium_mg": "392,0"
+  },
+  {
+    "buah": "Mangga",
+    "air_g": "87,0",
+    "energi_kcal": "52,0",
+    "karbohidratg": "12,3",
+    "protein_g": "0,7",
+    "lemak_total_g": "0,0",
+    "serat_pangan_g": "1,6",
+    "vitamin_c_mg": "12,0",
+    "vitamin_a___karoten_\u00b5g": "316,0",
+    "kalium_mg": "140,0"
+  }
+]

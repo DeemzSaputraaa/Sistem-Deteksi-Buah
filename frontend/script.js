@@ -4,6 +4,7 @@ createApp({
   data() {
     return {
       API_URL: window.BACKEND_URL || "http://localhost:8000/api/detect",
+      TKPI_URL: window.BACKEND_TKPI_URL || "http://localhost:8000/api/tkpi",
       currentFile: null,
       imageUrl: "",
       predictions: [],
@@ -18,6 +19,8 @@ createApp({
       prevSlide: null,
       slideDirection: "left",
       slideTimer: null,
+      tkpiData: {},
+      tkpiLoaded: false,
       heroSlides: [
         {
           name: "Apel",
@@ -81,18 +84,18 @@ createApp({
         },
       ],
       labelAliases: {
-        apel: "apple",
-        pisang: "banana",
-        jeruk: "orange",
-        anggur: "grapes",
-        strawberry: "strawberry",
-        semangka: "semangka",
+        alpukat: "alpukat",
+        apel: "apel",
+        jambubiji: "jambu_biji",
+        "jambu biji": "jambu_biji",
+        jambu_biji: "jambu_biji",
+        jeruk: "jeruk",
+        mangga: "mangga",
         melon: "melon",
         pepaya: "pepaya",
-        jambu_biji: "jambu_biji",
-        alpukat: "alpukat",
+        pisang: "pisang",
         salak: "salak",
-        mangga: "mangga",
+        semangka: "semangka",
       },
       nutritionData: {
         semangka: {
@@ -247,9 +250,61 @@ createApp({
         .map((item) => `${this.formatFruitName(item.fruit)} (${item.count})`)
         .join(", ");
     },
-    benefits() {
-      const nutrition = this.getNutrition(this.topResult?.fruit);
-      return this.buildBenefits(nutrition);
+    kandunganTables() {
+      if (!this.tkpiLoaded) {
+        return [
+          {
+            key: "status",
+            title: "Status",
+            rows: [{ label: "Info", value: "Memuat data kandungan..." }],
+          },
+        ];
+      }
+
+      if (!this.summary.length) {
+        return [
+          {
+            key: "status",
+            title: "Status",
+            rows: [{ label: "Info", value: "Data kandungan tidak tersedia." }],
+          },
+        ];
+      }
+
+      const safe = (value, unit) => {
+        if (value === undefined || value === null || value === "") {
+          return "-";
+        }
+        return unit ? `${value} ${unit}` : value;
+      };
+
+      return this.summary.map((item) => {
+        const row = this.getTkpi(item.fruit);
+        const title = this.formatFruitName(item.fruit);
+        if (!row) {
+          return {
+            key: item.fruit,
+            title,
+            rows: [{ label: "Info", value: "Data kandungan tidak tersedia." }],
+          };
+        }
+
+        return {
+          key: item.fruit,
+          title,
+          rows: [
+            { label: "Air", value: safe(row.air_g, "g") },
+            { label: "Energi", value: safe(row.energi_kcal, "kcal") },
+            { label: "Karbohidrat", value: safe(row.karbohidratg, "g") },
+            { label: "Protein", value: safe(row.protein_g, "g") },
+            { label: "Lemak total", value: safe(row.lemak_total_g, "g") },
+            { label: "Serat pangan", value: safe(row.serat_pangan_g, "g") },
+            { label: "Vitamin C", value: safe(row.vitamin_c_mg, "mg") },
+            { label: "Vitamin A / beta-karoten", value: safe(row.vitamin_a__karoten_ug, "ug") },
+            { label: "Kalium", value: safe(row.kalium_mg, "mg") },
+          ],
+        };
+      });
     },
   },
   methods: {
@@ -505,12 +560,32 @@ createApp({
       }
       return classes;
     },
+    async loadTkpi() {
+      try {
+        const response = await fetch(this.TKPI_URL);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        const payload = await response.json();
+        this.tkpiData = payload.data || {};
+        this.tkpiLoaded = true;
+      } catch (error) {
+        console.error("Gagal memuat TKPI:", error);
+        this.tkpiData = {};
+        this.tkpiLoaded = false;
+      }
+    },
+    getTkpi(fruitKey) {
+      if (!fruitKey) return null;
+      return this.tkpiData[fruitKey] || null;
+    },
   },
   mounted() {
     this.updateActiveNav();
     this.handleScroll = () => this.updateActiveNav();
     window.addEventListener("scroll", this.handleScroll, { passive: true });
     this.startSlider();
+    this.loadTkpi();
 
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       anchor.addEventListener("click", (event) => {

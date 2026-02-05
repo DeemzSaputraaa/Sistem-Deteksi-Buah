@@ -1,6 +1,8 @@
 import io
 import os
-from typing import List
+import re
+import json
+from typing import Dict, List
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -31,18 +33,16 @@ CLASS_NAMES = os.getenv(
     "YOLO_CLASS_NAMES",
     ",".join(
         [
-            "apel",
-            "pisang",
-            "jeruk",
-            "anggur",
-            "strawberry",
-            "semangka",
-            "melon",
-            "pepaya",
-            "jambu_biji",
-            "alpukat",
-            "salak",
-            "mangga",
+            "Alpukat",
+            "Apel",
+            "JambuBiji",
+            "Jeruk",
+            "Mangga",
+            "Melon",
+            "Pepaya",
+            "Pisang",
+            "Salak",
+            "Semangka",
         ]
     ),
 ).split(",")
@@ -50,11 +50,49 @@ CLASS_NAMES = os.getenv(
 # Set nama kelas ke model (urutkan sesuai urutan label saat training best.pt)
 model.model.names = {i: name for i, name in enumerate(CLASS_NAMES)}
 
+TKPI_PATH = os.getenv(
+    "TKPI_JSON_PATH",
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tkpi.json")),
+)
+
+
+def _normalize_key(value: str) -> str:
+    if not value:
+        return ""
+    value = value.strip().lower()
+    value = re.sub(r"\s+", "_", value)
+    value = re.sub(r"[^a-z0-9_]+", "", value)
+    return value
+
+
+def _load_tkpi(path: str) -> Dict[str, Dict[str, str]]:
+    if not os.path.exists(path):
+        return {}
+
+    with open(path, encoding="utf-8") as jsonfile:
+        rows = json.load(jsonfile)
+
+    data: Dict[str, Dict[str, str]] = {}
+    for row in rows:
+        raw_name = row.get("buah") or row.get("Buah")
+        key = _normalize_key(raw_name or "")
+        if not key:
+            continue
+        data[key] = row
+    return data
+
+
+TKPI_DATA = _load_tkpi(TKPI_PATH)
+
 
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
+
+@app.get("/api/tkpi")
+def get_tkpi():
+    return {"data": TKPI_DATA}
 
 def _serialize_predictions(results) -> List[dict]:
     serialized = []
@@ -85,7 +123,7 @@ async def detect(image: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Gagal membaca gambar")
 
     try:
-        results = model.predict(source=img, imgsz=640, conf=0.25, verbose=False)
+        results = model.predict(source=img, imgsz=640, conf=0.4, verbose=False)
     except Exception:
         raise HTTPException(status_code=500, detail="Gagal menjalankan inferensi")
 
