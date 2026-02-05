@@ -36,50 +36,42 @@ createApp({
         },
         {
           name: "Jeruk",
-          description:
-            "Jeruk kaya vitamin C untuk membantu daya tahan tubuh.",
+          description: "Jeruk kaya vitamin C untuk membantu daya tahan tubuh.",
           image: "assets/Jeruk.png",
         },
         {
           name: "Jambu Biji",
-          description:
-            "Jambu biji tinggi vitamin C dan antioksidan alami.",
+          description: "Jambu biji tinggi vitamin C dan antioksidan alami.",
           image: "assets/Jambu%20Biji.png",
         },
         {
           name: "Alpukat",
-          description:
-            "Alpukat kaya lemak baik untuk kesehatan jantung.",
+          description: "Alpukat kaya lemak baik untuk kesehatan jantung.",
           image: "assets/Alpukat.png",
         },
         {
           name: "Mangga",
-          description:
-            "Mangga manis alami dengan vitamin A dan serat.",
+          description: "Mangga manis alami dengan vitamin A dan serat.",
           image: "assets/Mangga.png",
         },
         {
           name: "Melon",
-          description:
-            "Melon menyegarkan dan membantu hidrasi tubuh.",
+          description: "Melon menyegarkan dan membantu hidrasi tubuh.",
           image: "assets/Melon.png",
         },
         {
           name: "Pepaya",
-          description:
-            "Pepaya membantu pencernaan dengan enzim alami.",
+          description: "Pepaya membantu pencernaan dengan enzim alami.",
           image: "assets/Pepaya.png",
         },
         {
           name: "Salak",
-          description:
-            "Salak kaya serat dan cocok untuk camilan sehat.",
+          description: "Salak kaya serat dan cocok untuk camilan sehat.",
           image: "assets/Salak.png",
         },
         {
           name: "Semangka",
-          description:
-            "Semangka tinggi air untuk hidrasi dan rasa segar.",
+          description: "Semangka tinggi air untuk hidrasi dan rasa segar.",
           image: "assets/Semangka.png",
         },
       ],
@@ -300,7 +292,10 @@ createApp({
             { label: "Lemak total", value: safe(row.lemak_total_g, "g") },
             { label: "Serat pangan", value: safe(row.serat_pangan_g, "g") },
             { label: "Vitamin C", value: safe(row.vitamin_c_mg, "mg") },
-            { label: "Vitamin A / beta-karoten", value: safe(row.vitamin_a__karoten_ug, "ug") },
+            {
+              label: "Vitamin A / beta-karoten",
+              value: safe(row.vitamin_a__karoten_ug, "ug"),
+            },
             { label: "Kalium", value: safe(row.kalium_mg, "mg") },
           ],
         };
@@ -325,7 +320,10 @@ createApp({
         const nextTop =
           i === sections.length - 1 ? Infinity : sections[i + 1].offsetTop;
 
-        if (scrollPosition >= sectionTop - 100 && scrollPosition < nextTop - 100) {
+        if (
+          scrollPosition >= sectionTop - 100 &&
+          scrollPosition < nextTop - 100
+        ) {
           this.activeSection = section.getAttribute("id");
           return;
         }
@@ -499,7 +497,9 @@ createApp({
     },
     formatFruitName(fruitKey) {
       const nutrition = this.getNutrition(fruitKey);
-      return nutrition?.nama || fruitKey.charAt(0).toUpperCase() + fruitKey.slice(1);
+      return (
+        nutrition?.nama || fruitKey.charAt(0).toUpperCase() + fruitKey.slice(1)
+      );
     },
     buildBenefits(nutrition) {
       const benefits = [];
@@ -518,10 +518,14 @@ createApp({
         }
       }
       if (benefits.length < 3) {
-        benefits.push("Konsumsi rutin membantu memenuhi kebutuhan gizi harian.");
+        benefits.push(
+          "Konsumsi rutin membantu memenuhi kebutuhan gizi harian.",
+        );
       }
       if (benefits.length < 3) {
-        benefits.push("Cocok dijadikan camilan sehat atau campuran menu harian.");
+        benefits.push(
+          "Cocok dijadikan camilan sehat atau campuran menu harian.",
+        );
       }
       return benefits.slice(0, 4);
     },
@@ -610,3 +614,129 @@ createApp({
     this.stopSlider();
   },
 }).mount("#app");
+
+const initMatrixRain = () => {
+  const canvas = document.getElementById("matrixRain");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+  let width = 0;
+  let height = 0;
+  let columns = 0;
+  let particles = [];
+  let animationId = null;
+  const minSize = 52;
+  const maxSize = 86;
+  const minSpeed = 0.45;
+  const maxSpeed = 1.2;
+  const columnGap = 64;
+
+  const assetImages = [
+    "assets/Alpukat.png",
+    "assets/Apel.png",
+    "assets/Jambu Biji.png",
+    "assets/Jeruk.png",
+    "assets/Mangga.png",
+    "assets/Melon.png",
+    "assets/Pepaya.png",
+    "assets/Pisang.png",
+    "assets/Salak.png",
+    "assets/Semangka.png",
+  ];
+
+  const loadedImages = [];
+
+  const loadImages = () =>
+    Promise.all(
+      assetImages.map(
+        (src) =>
+          new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(null);
+            img.src = encodeURI(src);
+          }),
+      ),
+    ).then((items) => items.filter(Boolean));
+
+  const resize = () => {
+    width = canvas.clientWidth;
+    height = canvas.clientHeight;
+
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    columns = Math.max(1, Math.floor(width / columnGap));
+    particles = Array.from({ length: columns }, (_, idx) =>
+      createParticle(idx, columns),
+    );
+  };
+
+  const createParticle = (index, totalColumns) => {
+    const size = minSize + Math.random() * (maxSize - minSize);
+    const image =
+      loadedImages[Math.floor(Math.random() * loadedImages.length)] || null;
+    const spacing = width / totalColumns;
+    return {
+      x: Math.floor(index * spacing + spacing * 0.5 - size / 2),
+      y: Math.random() * height,
+      size,
+      speed: minSpeed + Math.random() * (maxSpeed - minSpeed),
+      image,
+      opacity: 1,
+    };
+  };
+
+  const draw = () => {
+    ctx.clearRect(0, 0, width, height);
+
+    particles.forEach((particle) => {
+      if (!particle.image) return;
+      ctx.globalAlpha = particle.opacity;
+      ctx.drawImage(
+        particle.image,
+        particle.x,
+        particle.y,
+        particle.size,
+        particle.size,
+      );
+
+      particle.y += particle.speed;
+
+      if (particle.y - particle.size > height) {
+        particle.y = -particle.size;
+        const size = minSize + Math.random() * (maxSize - minSize);
+        particle.size = size;
+        particle.image =
+          loadedImages[Math.floor(Math.random() * loadedImages.length)] || null;
+      }
+    });
+    ctx.globalAlpha = 1;
+  };
+
+  let lastTime = 0;
+  const animate = (time) => {
+    if (time - lastTime > 16) {
+      draw();
+      lastTime = time;
+    }
+    animationId = window.requestAnimationFrame(animate);
+  };
+
+  loadImages().then((images) => {
+    loadedImages.splice(0, loadedImages.length, ...images);
+    resize();
+    animationId = window.requestAnimationFrame(animate);
+  });
+
+  window.addEventListener("resize", resize);
+  window.addEventListener("beforeunload", () => {
+    if (animationId) {
+      window.cancelAnimationFrame(animationId);
+    }
+  });
+};
+
+window.addEventListener("load", initMatrixRain);

@@ -1,9 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FruitDetect - Deteksi Buah dengan AI</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Sora:wght@500;700&display=swap"
+    />
     <link rel="stylesheet" href="style.css" />
     <link
       rel="stylesheet"
@@ -17,7 +21,11 @@
         <div class="container">
           <nav class="navbar">
             <div class="logo">
-              <img src="assets/fruit-logo.png" alt="FruitDetect logo" class="logo-img" />
+              <img
+                src="assets/fruit-logo.png"
+                alt="FruitDetect logo"
+                class="logo-img"
+              />
             </div>
             <div class="nav-spacer" aria-hidden="true"></div>
           </nav>
@@ -26,25 +34,45 @@
 
       <!-- Hero Section -->
       <section class="hero" id="home">
+        <canvas id="matrixRain" class="matrix-rain" aria-hidden="true"></canvas>
         <div class="container">
-          <div class="hero-slider">
-            <div class="hero-static">
-              <h1>
-                <span class="hero-title-line">Sistem Deteksi Buah dengan</span>
-                <span class="hero-title-line">Kecerdasan Buatan</span>
-              </h1>
-              <a href="#deteksi" class="cta-button"> Coba Sekarang </a>
+          <div class="hero-shell">
+            <div class="hero-badge">
+              <span class="badge-dot"></span>
+              Teknologi Yolov11 Deep Learning
             </div>
-            <div class="hero-slides">
-              <div
-                v-for="(slide, index) in heroSlides"
-                :key="slide.name"
-                :class="slideClass(index)"
+            <h1 class="hero-title">
+              Deteksi <span class="hero-accent">Buah-Buahan Lokal</span>
+              <span class="hero-break"
+                >menggunakan AI (Artificial Intelligence)</span
               >
-                <div class="hero-copy"></div>
-                <div class="hero-art">
-                  <img :src="slide.image" :alt="slide.name + ' fruit'" />
-                </div>
+            </h1>
+            <p class="hero-desc">
+              Teknologi pembelajaran mesin untuk mengenali buah lokal dengan
+              cepat, akurat, dan mudah digunakan di perangkat Anda.
+            </p>
+            <div class="hero-actions">
+              <a href="#deteksi" class="btn-primary">Mulai Deteksi</a>
+              <a href="#cara-kerja" class="btn-secondary"
+                >Pelajari Lebih Lanjut</a
+              >
+            </div>
+            <div class="hero-stats">
+              <div class="stat-card">
+                <div class="stat-value">95%+</div>
+                <div class="stat-label">Akurasi Deteksi</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">10+</div>
+                <div class="stat-label">Jenis Buah</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">&lt;1s</div>
+                <div class="stat-label">Waktu Respon</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value">24/7</div>
+                <div class="stat-label">Siap Digunakan</div>
               </div>
             </div>
           </div>
@@ -229,7 +257,10 @@
                       class="nutrition-table-block"
                     >
                       <div class="nutrition-table-title">{{ table.title }}</div>
-                      <table class="nutrition-table" aria-label="Tabel kandungan gizi">
+                      <table
+                        class="nutrition-table"
+                        aria-label="Tabel kandungan gizi"
+                      >
                         <thead>
                           <tr>
                             <th>Kandungan</th>
