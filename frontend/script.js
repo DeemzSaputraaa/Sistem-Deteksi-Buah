@@ -455,7 +455,7 @@ createApp({
         const text = `${displayName} ${score}%`;
 
         ctx.strokeStyle = "#2ecc71";
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 5;
         ctx.strokeRect(x1, y1, width, height);
 
         const textWidth = ctx.measureText(text).width + 10;
@@ -743,3 +743,25 @@ window.addEventListener("load", initMatrixRain);
 window.addEventListener("load", () => {
   document.body.classList.add("page-loaded");
 });
+
+const initScrollReveal = () => {
+  const targets = document.querySelectorAll(".reveal-on-scroll");
+  if (!targets.length) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in-view");
+        } else {
+          entry.target.classList.remove("in-view");
+        }
+      });
+    },
+    { threshold: 0.2 },
+  );
+
+  targets.forEach((target) => observer.observe(target));
+};
+
+window.addEventListener("load", initScrollReveal);

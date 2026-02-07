@@ -26,8 +26,65 @@
                 alt="FruitDetect logo"
                 class="logo-img"
               />
+              <span class="logo-text">FruitDetect</span>
             </div>
-            <div class="nav-spacer" aria-hidden="true"></div>
+            <ul class="nav-links" :class="{ open: isMenuOpen }">
+              <li>
+                <a
+                  href="#home"
+                  :class="{ active: activeSection === 'home' }"
+                  @click="setActive('home')"
+                  >Beranda</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#cara-kerja"
+                  :class="{ active: activeSection === 'cara-kerja' }"
+                  @click="setActive('cara-kerja')"
+                  >Tentang</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#supported-fruits"
+                  :class="{ active: activeSection === 'supported-fruits' }"
+                  @click="setActive('supported-fruits')"
+                  >Teknologi</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#deteksi"
+                  :class="{ active: activeSection === 'deteksi' }"
+                  @click="setActive('deteksi')"
+                  >Fitur</a
+                >
+              </li>
+              <li class="mobile-only">
+                <a
+                  href="#deteksi"
+                  class="nav-cta"
+                  @click="setActive('deteksi')"
+                  >Mulai Deteksi</a
+                >
+              </li>
+            </ul>
+            <div class="nav-actions">
+              <a href="#deteksi" class="nav-cta" @click="setActive('deteksi')"
+                >Mulai Deteksi</a
+              >
+            </div>
+            <button
+              class="menu-toggle"
+              type="button"
+              aria-label="Toggle menu"
+              @click="toggleMenu"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
           </nav>
         </div>
       </header>
@@ -74,6 +131,61 @@
                 <div class="stat-value">24/7</div>
                 <div class="stat-label">Siap Digunakan</div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Supported Fruits Section -->
+      <section
+        class="supported-fruits reveal-on-scroll"
+        id="supported-fruits"
+      >
+        <div class="container">
+          <div class="section-header">
+            <h2>Buah yang Didukung</h2>
+            <p>Buah-Buahan lokal yang bisa dideteksi oleh sistem</p>
+          </div>
+          <div class="fruit-grid">
+            <div class="fruit-card">
+              <img src="assets/Apel.png" alt="Apel" />
+              <span>Apel</span>
+            </div>
+            <div class="fruit-card">
+              <img src="assets/Pisang.png" alt="Pisang" />
+              <span>Pisang</span>
+            </div>
+            <div class="fruit-card">
+              <img src="assets/Jeruk.png" alt="Jeruk" />
+              <span>Jeruk</span>
+            </div>
+            <div class="fruit-card">
+              <img src="assets/Jambu Biji.png" alt="Jambu Biji" />
+              <span>Jambu Biji</span>
+            </div>
+            <div class="fruit-card">
+              <img src="assets/Alpukat.png" alt="Alpukat" />
+              <span>Alpukat</span>
+            </div>
+            <div class="fruit-card">
+              <img src="assets/Mangga.png" alt="Mangga" />
+              <span>Mangga</span>
+            </div>
+            <div class="fruit-card">
+              <img src="assets/Melon.png" alt="Melon" />
+              <span>Melon</span>
+            </div>
+            <div class="fruit-card">
+              <img src="assets/Pepaya.png" alt="Pepaya" />
+              <span>Pepaya</span>
+            </div>
+            <div class="fruit-card">
+              <img src="assets/Salak.png" alt="Salak" />
+              <span>Salak</span>
+            </div>
+            <div class="fruit-card">
+              <img src="assets/Semangka.png" alt="Semangka" />
+              <span>Semangka</span>
             </div>
           </div>
         </div>

@@ -21,7 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL_PATH = os.getenv("YOLO_MODEL_PATH", "models/best.pt")
+MODEL_PATH = os.getenv("YOLO_MODEL_PATH", "models/best_now.pt")
 
 try:
     model = YOLO(MODEL_PATH)
