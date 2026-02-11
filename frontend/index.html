@@ -39,17 +39,25 @@
               </li>
               <li>
                 <a
-                  href="#cara-kerja"
-                  :class="{ active: activeSection === 'cara-kerja' }"
-                  @click="setActive('cara-kerja')"
-                  >Tentang</a
+                  href="#supported-fruits"
+                  :class="{ active: activeSection === 'supported-fruits' }"
+                  @click="setActive('supported-fruits')"
+                  >Buah Didukung</a
                 >
               </li>
               <li>
                 <a
-                  href="#supported-fruits"
-                  :class="{ active: activeSection === 'supported-fruits' }"
-                  @click="setActive('supported-fruits')"
+                  href="#cara-kerja"
+                  :class="{ active: activeSection === 'cara-kerja' }"
+                  @click="setActive('cara-kerja')"
+                  >Cara Kerja</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#teknologi"
+                  :class="{ active: activeSection === 'teknologi' }"
+                  @click="setActive('teknologi')"
                   >Teknologi</a
                 >
               </li>
@@ -58,7 +66,7 @@
                   href="#deteksi"
                   :class="{ active: activeSection === 'deteksi' }"
                   @click="setActive('deteksi')"
-                  >Fitur</a
+                  >Deteksi</a
                 >
               </li>
               <li class="mobile-only">
@@ -247,6 +255,117 @@
         </div>
       </section>
 
+      <!-- Teknologi Section -->
+      <section class="teknologi" id="teknologi">
+        <div class="container">
+          <div class="section-header">
+            <h2>Didukung <span class="title-accent">Teknologi Terkini</span></h2>
+            <p>
+              Menggunakan framework deep learning modern untuk hasil deteksi
+              terbaik.
+            </p>
+          </div>
+
+          <div class="tech-grid">
+            <div class="tech-card">
+              <div class="tech-icon">
+                <i class="fas fa-eye"></i>
+              </div>
+              <h3>YOLOv11</h3>
+              <p>
+                Algoritma deteksi objek real-time untuk akurasi tinggi dan cepat.
+              </p>
+              <span class="tech-tag">v11</span>
+            </div>
+
+            <div class="tech-card">
+              <div class="tech-icon">
+                <i class="fab fa-python"></i>
+              </div>
+              <h3>Python</h3>
+              <p>
+                Bahasa pemrograman utama untuk pengembangan AI dan pemrosesan
+                data.
+              </p>
+              <span class="tech-tag">3.10+</span>
+            </div>
+
+            <div class="tech-card">
+              <div class="tech-icon">
+                <i class="fas fa-fire"></i>
+              </div>
+              <h3>PyTorch</h3>
+              <p>
+                Framework deep learning yang kuat untuk training dan inference
+                model.
+              </p>
+              <span class="tech-tag">2.0+</span>
+            </div>
+
+            <div class="tech-card">
+              <div class="tech-icon">
+                <i class="fas fa-server"></i>
+              </div>
+              <h3>Flask API</h3>
+              <p>
+                Backend ringan untuk deployment model dan integrasi aplikasi.
+              </p>
+              <span class="tech-tag">API</span>
+            </div>
+          </div>
+          <div class="arsitektur-block">
+            <div class="section-header">
+              <h2>Arsitektur Sistem</h2>
+              <p>
+                Alur kerja end-to-end dari input gambar hingga hasil deteksi.
+              </p>
+            </div>
+
+            <div class="arch-flow">
+              <div class="arch-card">
+                <div class="arch-icon">
+                  <i class="fas fa-image"></i>
+                </div>
+                <h3>Input Gambar</h3>
+              </div>
+
+              <div class="arch-arrow">
+                <i class="fas fa-arrow-right"></i>
+              </div>
+
+              <div class="arch-card">
+                <div class="arch-icon">
+                  <i class="fas fa-sliders-h"></i>
+                </div>
+                <h3>Preprocessing</h3>
+              </div>
+
+              <div class="arch-arrow">
+                <i class="fas fa-arrow-right"></i>
+              </div>
+
+              <div class="arch-card highlight">
+                <div class="arch-icon">
+                  <i class="fas fa-bolt"></i>
+                </div>
+                <h3>YOLO Model</h3>
+              </div>
+
+              <div class="arch-arrow">
+                <i class="fas fa-arrow-right"></i>
+              </div>
+
+              <div class="arch-card success">
+                <div class="arch-icon">
+                  <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>Hasil Deteksi</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Detection Section -->
       <section class="detection" id="deteksi">
         <div class="container">
@@ -354,23 +473,6 @@
                   <p>Tidak ada buah yang terdeteksi dalam gambar.</p>
                 </div>
                 <div v-else class="result-summary">
-                  <div class="result-row">
-                    <span class="label">Nama Tanaman:</span>
-                    <span class="value">{{ topFruitName }}</span>
-                  </div>
-                  <div class="result-row">
-                    <span class="label">Confidence:</span>
-                    <span class="value">{{ topConfidence }}%</span>
-                  </div>
-                  <div class="progress-track" aria-label="Confidence bar">
-                    <div
-                      class="progress-bar"
-                      :style="{ width: topConfidence + '%' }"
-                    ></div>
-                  </div>
-                  <div class="result-row">
-                    <span class="label">Deskripsi Kandungan:</span>
-                  </div>
                   <div class="nutrition-table-wrap">
                     <div
                       v-for="(table, idx) in kandunganTables"
@@ -378,6 +480,29 @@
                       class="nutrition-table-block"
                     >
                       <div class="nutrition-table-title">{{ table.title }}</div>
+                      <div
+                        v-if="table.confidencePercent !== null"
+                        class="class-confidence"
+                      >
+                        <div class="class-confidence-row">
+                          <span class="label">Confidence:</span>
+                          <span class="value"
+                            >{{ table.confidencePercent }}%</span
+                          >
+                        </div>
+                        <div
+                          class="class-confidence-track"
+                          aria-label="Confidence bar"
+                        >
+                          <div
+                            class="class-confidence-bar"
+                            :style="{ width: table.confidencePercent + '%' }"
+                          ></div>
+                        </div>
+                        <div class="class-confidence-desc">
+                          Deskripsi Kandungan:
+                        </div>
+                      </div>
                       <table
                         class="nutrition-table"
                         aria-label="Tabel kandungan gizi"

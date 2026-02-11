@@ -21,7 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL_PATH = os.getenv("YOLO_MODEL_PATH", "models/best_now.pt")
+MODEL_PATH = os.getenv("YOLO_MODEL_PATH", "models/best_v6.pt")
 
 try:
     model = YOLO(MODEL_PATH)
@@ -123,7 +123,7 @@ async def detect(image: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Gagal membaca gambar")
 
     try:
-        results = model.predict(source=img, imgsz=640, conf=0.4, verbose=False)
+        results = model.predict(source=img, imgsz=640, conf=0.6, verbose=False)
     except Exception:
         raise HTTPException(status_code=500, detail="Gagal menjalankan inferensi")
 

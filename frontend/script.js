@@ -248,6 +248,7 @@ createApp({
           {
             key: "status",
             title: "Status",
+            confidencePercent: null,
             rows: [{ label: "Info", value: "Memuat data kandungan..." }],
           },
         ];
@@ -258,6 +259,7 @@ createApp({
           {
             key: "status",
             title: "Status",
+            confidencePercent: null,
             rows: [{ label: "Info", value: "Data kandungan tidak tersedia." }],
           },
         ];
@@ -273,10 +275,12 @@ createApp({
       return this.summary.map((item) => {
         const row = this.getTkpi(item.fruit);
         const title = this.formatFruitName(item.fruit);
+        const confidencePercent = Math.round(item.averageScore * 100);
         if (!row) {
           return {
             key: item.fruit,
             title,
+            confidencePercent,
             rows: [{ label: "Info", value: "Data kandungan tidak tersedia." }],
           };
         }
@@ -284,6 +288,7 @@ createApp({
         return {
           key: item.fruit,
           title,
+          confidencePercent,
           rows: [
             { label: "Air", value: safe(row.air_g, "g") },
             { label: "Energi", value: safe(row.energi_kcal, "kcal") },
