@@ -22,11 +22,11 @@
           <nav class="navbar">
             <div class="logo">
               <img
-                src="assets/fruit-logo.png"
+                src="assets/logo.png"
                 alt="FruitDetect logo"
                 class="logo-img"
               />
-              <span class="logo-text">FruitDetect</span>
+              <!-- <span class="logo-text">FruitDetect</span> -->
             </div>
             <ul class="nav-links" :class="{ open: isMenuOpen }">
               <li>
@@ -70,10 +70,7 @@
                 >
               </li>
               <li class="mobile-only">
-                <a
-                  href="#deteksi"
-                  class="nav-cta"
-                  @click="setActive('deteksi')"
+                <a href="#deteksi" class="nav-cta" @click="setActive('deteksi')"
                   >Mulai Deteksi</a
                 >
               </li>
@@ -145,10 +142,7 @@
       </section>
 
       <!-- Supported Fruits Section -->
-      <section
-        class="supported-fruits reveal-on-scroll"
-        id="supported-fruits"
-      >
+      <section class="supported-fruits reveal-on-scroll" id="supported-fruits">
         <div class="container">
           <div class="section-header">
             <h2>Buah yang Didukung</h2>
@@ -259,7 +253,9 @@
       <section class="teknologi" id="teknologi">
         <div class="container">
           <div class="section-header">
-            <h2>Didukung <span class="title-accent">Teknologi Terkini</span></h2>
+            <h2>
+              Didukung <span class="title-accent">Teknologi Terkini</span>
+            </h2>
             <p>
               Menggunakan framework deep learning modern untuk hasil deteksi
               terbaik.
@@ -273,7 +269,8 @@
               </div>
               <h3>YOLOv11</h3>
               <p>
-                Algoritma deteksi objek real-time untuk akurasi tinggi dan cepat.
+                Algoritma deteksi objek real-time untuk akurasi tinggi dan
+                cepat.
               </p>
               <span class="tech-tag">v11</span>
             </div>
@@ -368,9 +365,14 @@
 
       <!-- Detection Section -->
       <section class="detection" id="deteksi">
+        <canvas
+          id="fruitRainDetection"
+          class="fruit-rain"
+          aria-hidden="true"
+        ></canvas>
         <div class="container">
           <div class="section-header">
-            <h2>Deteksi Buah</h2>
+            <h2>Deteksi <span class="title-accent">Buah</span></h2>
             <p>Unggah gambar buah untuk memulai deteksi</p>
           </div>
 

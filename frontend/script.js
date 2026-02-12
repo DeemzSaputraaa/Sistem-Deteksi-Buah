@@ -620,8 +620,8 @@ createApp({
   },
 }).mount("#app");
 
-const initMatrixRain = () => {
-  const canvas = document.getElementById("matrixRain");
+const initMatrixRain = (targetId, options = {}) => {
+  const canvas = document.getElementById(targetId);
   if (!canvas) return;
 
   const ctx = canvas.getContext("2d");
@@ -630,11 +630,11 @@ const initMatrixRain = () => {
   let columns = 0;
   let particles = [];
   let animationId = null;
-  const minSize = 52;
-  const maxSize = 86;
-  const minSpeed = 0.45;
-  const maxSpeed = 1.2;
-  const columnGap = 64;
+  const minSize = options.minSize ?? 52;
+  const maxSize = options.maxSize ?? 86;
+  const minSpeed = options.minSpeed ?? 0.45;
+  const maxSpeed = options.maxSpeed ?? 1.2;
+  const columnGap = options.columnGap ?? 64;
 
   const assetImages = [
     "assets/Alpukat.png",
@@ -744,7 +744,16 @@ const initMatrixRain = () => {
   });
 };
 
-window.addEventListener("load", initMatrixRain);
+window.addEventListener("load", () => {
+  initMatrixRain("matrixRain");
+  initMatrixRain("fruitRainDetection", {
+    minSize: 48,
+    maxSize: 90,
+    minSpeed: 0.45,
+    maxSpeed: 1.4,
+    columnGap: 36,
+  });
+});
 window.addEventListener("load", () => {
   document.body.classList.add("page-loaded");
 });
