@@ -21,6 +21,7 @@ createApp({
       slideTimer: null,
       tkpiData: {},
       tkpiLoaded: false,
+      activeTableIndex: 0,
       heroSlides: [
         {
           name: "Apel",
@@ -421,6 +422,7 @@ createApp({
         }));
 
         this.predictions = normalizedPredictions;
+        this.activeTableIndex = normalizedPredictions.length ? 0 : -1;
 
         if (normalizedPredictions.length) {
           this.drawResults(normalizedPredictions);
@@ -490,7 +492,11 @@ createApp({
       this.detectionAttempted = false;
       this.resultsError = "";
       this.selectedFileName = "";
+      this.activeTableIndex = 0;
       this.clearCanvas();
+    },
+    toggleTable(index) {
+      this.activeTableIndex = index;
     },
     normalizeLabel(label) {
       if (!label) return "";
@@ -736,19 +742,28 @@ const initMatrixRain = (targetId, options = {}) => {
     animationId = window.requestAnimationFrame(animate);
   });
 
+  const resizeObserver = new ResizeObserver(() => {
+    resize();
+  });
+  resizeObserver.observe(canvas);
+
   window.addEventListener("resize", resize);
   window.addEventListener("beforeunload", () => {
     if (animationId) {
       window.cancelAnimationFrame(animationId);
     }
+    resizeObserver.disconnect();
   });
 };
 
 window.addEventListener("load", () => {
-  initMatrixRain("matrixRain");
+  initMatrixRain("matrixRain", {
+    minSize: 56,
+    maxSize: 96,
+  });
   initMatrixRain("fruitRainDetection", {
-    minSize: 48,
-    maxSize: 90,
+    minSize: 56,
+    maxSize: 96,
     minSpeed: 0.45,
     maxSpeed: 1.4,
     columnGap: 36,

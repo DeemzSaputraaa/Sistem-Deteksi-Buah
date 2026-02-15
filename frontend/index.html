@@ -480,48 +480,68 @@
                       v-for="(table, idx) in kandunganTables"
                       :key="table.key || idx"
                       class="nutrition-table-block"
+                      :class="{ active: activeTableIndex === idx }"
                     >
-                      <div class="nutrition-table-title">{{ table.title }}</div>
-                      <div
-                        v-if="table.confidencePercent !== null"
-                        class="class-confidence"
+                      <button
+                        type="button"
+                        class="nutrition-table-header"
+                        @click="toggleTable(idx)"
+                        :aria-expanded="activeTableIndex === idx"
                       >
-                        <div class="class-confidence-row">
-                          <span class="label">Confidence:</span>
-                          <span class="value"
-                            >{{ table.confidencePercent }}%</span
-                          >
+                        <div class="nutrition-header-row">
+                          <div class="nutrition-table-title">
+                            {{ table.title }}
+                          </div>
+                          <span class="nutrition-toggle-icon" aria-hidden="true">
+                            <i class="fas fa-chevron-down"></i>
+                          </span>
                         </div>
                         <div
-                          class="class-confidence-track"
-                          aria-label="Confidence bar"
+                          v-if="table.confidencePercent !== null"
+                          class="class-confidence"
                         >
+                          <div class="class-confidence-row">
+                            <span class="label">Confidence:</span>
+                            <span class="value"
+                              >{{ table.confidencePercent }}%</span
+                            >
+                          </div>
                           <div
-                            class="class-confidence-bar"
-                            :style="{ width: table.confidencePercent + '%' }"
-                          ></div>
+                            class="class-confidence-track"
+                            aria-label="Confidence bar"
+                          >
+                            <div
+                              class="class-confidence-bar"
+                              :style="{ width: table.confidencePercent + '%' }"
+                            ></div>
+                          </div>
                         </div>
+                      </button>
+                      <div
+                        class="nutrition-table-body"
+                        :class="{ open: activeTableIndex === idx }"
+                      >
                         <div class="class-confidence-desc">
                           Deskripsi Kandungan:
                         </div>
+                        <table
+                          class="nutrition-table"
+                          aria-label="Tabel kandungan gizi"
+                        >
+                          <thead>
+                            <tr>
+                              <th>Kandungan</th>
+                              <th>Jumlah</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="(row, index) in table.rows" :key="index">
+                              <td>{{ row.label }}</td>
+                              <td>{{ row.value }}</td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
-                      <table
-                        class="nutrition-table"
-                        aria-label="Tabel kandungan gizi"
-                      >
-                        <thead>
-                          <tr>
-                            <th>Kandungan</th>
-                            <th>Jumlah</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-for="(row, index) in table.rows" :key="index">
-                            <td>{{ row.label }}</td>
-                            <td>{{ row.value }}</td>
-                          </tr>
-                        </tbody>
-                      </table>
                     </div>
                   </div>
                   <div class="detected-list">
