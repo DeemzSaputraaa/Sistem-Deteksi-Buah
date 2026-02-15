@@ -455,7 +455,7 @@
             </div>
 
             <div id="results" class="results results-panel">
-              <h3>Classification Results</h3>
+              <h3>Hasil Deteksi</h3>
               <div id="detectionResults" class="results-container">
                 <div v-if="resultsError" class="error-message">
                   <i class="fas fa-exclamation-circle"></i>
@@ -492,7 +492,10 @@
                           <div class="nutrition-table-title">
                             {{ table.title }}
                           </div>
-                          <span class="nutrition-toggle-icon" aria-hidden="true">
+                          <span
+                            class="nutrition-toggle-icon"
+                            aria-hidden="true"
+                          >
                             <i class="fas fa-chevron-down"></i>
                           </span>
                         </div>
@@ -547,10 +550,6 @@
                   <div class="detected-list">
                     Terdeteksi: {{ detectedList }}
                   </div>
-                  <p class="result-note">
-                    Khasiat dapat berbeda tergantung porsi dan kondisi tubuh
-                    masing-masing.
-                  </p>
                 </div>
               </div>
             </div>

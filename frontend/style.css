@@ -2283,15 +2283,6 @@ body.page-loaded .hero-accent::after {
   transition: width 0.4s ease;
 }
 
-.benefits-list {
-  margin: 0.25rem 0 0.5rem 1rem;
-  color: #3c4a5c;
-  line-height: 1.6;
-}
-
-.benefits-list li {
-  margin-bottom: 0.35rem;
-}
 
 .detected-list {
   font-size: 0.9rem;
