@@ -14,6 +14,8 @@ createApp({
       isDragOver: false,
       selectedFileName: "",
       isMenuOpen: false,
+      isPreviewOpen: false,
+      previewSrc: "",
       activeSection: "home",
       activeSlide: 0,
       prevSlide: null,
@@ -89,6 +91,18 @@ createApp({
         pisang: "pisang",
         salak: "salak",
         semangka: "semangka",
+      },
+      classColors: {
+        alpukat: "#4caf50",
+        apel: "#e53935",
+        jambu_biji: "#16a34a",
+        jeruk: "#f97316",
+        mangga: "#f59e0b",
+        melon: "#22c55e",
+        pepaya: "#f97316",
+        pisang: "#facc15",
+        salak: "#8b5e3c",
+        semangka: "#10b981",
       },
       nutritionData: {
         semangka: {
@@ -428,6 +442,9 @@ createApp({
           this.drawResults(normalizedPredictions);
         } else {
           this.clearCanvas();
+          if (this.isPreviewOpen) {
+            this.previewSrc = this.imageUrl;
+          }
         }
 
         setTimeout(() => {
@@ -452,6 +469,12 @@ createApp({
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
+      const scaleFactor = Math.max(canvas.width, canvas.height) / 1200;
+      const fontSize = Math.max(16, Math.round(18 * scaleFactor));
+      const boxLineWidth = Math.max(4, Math.round(8 * scaleFactor));
+      const textPaddingX = Math.max(8, Math.round(10 * scaleFactor));
+      const textHeight = Math.max(26, Math.round(fontSize + 10));
+
       predictions.forEach((prediction) => {
         const [x1, y1, x2, y2] = prediction.bbox;
         const width = x2 - x1;
@@ -461,20 +484,34 @@ createApp({
         const displayName = this.formatFruitName(normalized);
         const text = `${displayName} ${score}%`;
 
-        ctx.strokeStyle = "#2ecc71";
-        ctx.lineWidth = 5;
+        const classColor = this.getClassColor(normalized);
+        ctx.strokeStyle = classColor;
+        ctx.lineWidth = boxLineWidth;
+        ctx.shadowColor = "rgba(15, 23, 42, 0.35)";
+        ctx.shadowBlur = 6;
         ctx.strokeRect(x1, y1, width, height);
+        ctx.shadowBlur = 0;
 
-        const textWidth = ctx.measureText(text).width + 10;
-        const textHeight = 20;
-        ctx.fillStyle = "rgba(46, 204, 113, 0.9)";
-        ctx.fillRect(x1 - 1, y1 - textHeight, textWidth, textHeight);
+        ctx.font = `900 ${fontSize}px Arial`;
+        const textWidth = ctx.measureText(text).width + textPaddingX * 2;
+        const textX = Math.max(6, x1 - 2);
+        const textY = Math.max(textHeight + 6, y1);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+        ctx.fillRect(textX - 2, textY - textHeight, textWidth + 4, textHeight);
+        ctx.fillStyle = classColor;
+        ctx.fillRect(textX, textY - textHeight, textWidth, textHeight);
 
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 12px Arial";
+        ctx.lineWidth = Math.max(2, Math.round(boxLineWidth / 2));
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.85)";
         ctx.textBaseline = "middle";
-        ctx.fillText(text, x1 + 5, y1 - textHeight / 2 + 2);
+        ctx.strokeText(text, textX + textPaddingX, textY - textHeight / 2 + 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText(text, textX + textPaddingX, textY - textHeight / 2 + 2);
       });
+
+      if (this.isPreviewOpen) {
+        this.previewSrc = canvas.toDataURL("image/png");
+      }
     },
     clearCanvas() {
       const canvas = this.$refs.canvas;
@@ -493,6 +530,7 @@ createApp({
       this.resultsError = "";
       this.selectedFileName = "";
       this.activeTableIndex = 0;
+      this.closePreview();
       this.clearCanvas();
     },
     toggleTable(index) {
@@ -502,6 +540,25 @@ createApp({
       if (!label) return "";
       const lower = label.toLowerCase().split("-")[0].trim();
       return this.labelAliases[lower] || lower;
+    },
+    getClassColor(fruitKey) {
+      return this.classColors[fruitKey] || "#22c55e";
+    },
+    openPreview() {
+      if (!this.imageUrl) return;
+      const canvas = this.$refs.canvas;
+      if (canvas && this.predictions.length) {
+        this.previewSrc = canvas.toDataURL("image/png");
+      } else {
+        this.previewSrc = this.imageUrl;
+      }
+      this.isPreviewOpen = true;
+      document.body.classList.add("modal-open");
+    },
+    closePreview() {
+      this.isPreviewOpen = false;
+      this.previewSrc = "";
+      document.body.classList.remove("modal-open");
     },
     getNutrition(fruitKey) {
       return this.nutritionData[fruitKey];
@@ -599,6 +656,12 @@ createApp({
     this.updateActiveNav();
     this.handleScroll = () => this.updateActiveNav();
     window.addEventListener("scroll", this.handleScroll, { passive: true });
+    this.handleKeydown = (event) => {
+      if (event.key === "Escape" && this.isPreviewOpen) {
+        this.closePreview();
+      }
+    };
+    window.addEventListener("keydown", this.handleKeydown);
     this.startSlider();
     this.loadTkpi();
 
@@ -621,6 +684,9 @@ createApp({
   beforeUnmount() {
     if (this.handleScroll) {
       window.removeEventListener("scroll", this.handleScroll);
+    }
+    if (this.handleKeydown) {
+      window.removeEventListener("keydown", this.handleKeydown);
     }
     this.stopSlider();
   },
