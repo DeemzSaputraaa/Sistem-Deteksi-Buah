@@ -1,5 +1,9 @@
 const { createApp } = Vue;
 
+const requestLocomotiveUpdate = () => {
+  window.dispatchEvent(new Event("fruitdetect:loco-update"));
+};
+
 createApp({
   data() {
     return {
@@ -325,6 +329,7 @@ createApp({
   methods: {
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
+      requestLocomotiveUpdate();
     },
     setActive(section) {
       this.activeSection = section;
@@ -378,6 +383,7 @@ createApp({
       const reader = new FileReader();
       reader.onload = (e) => {
         this.imageUrl = e.target.result;
+        requestLocomotiveUpdate();
       };
       reader.readAsDataURL(file);
     },
@@ -391,6 +397,7 @@ createApp({
 
       const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      requestLocomotiveUpdate();
     },
     onDragOver() {
       this.isDragOver = true;
@@ -447,6 +454,7 @@ createApp({
           }
         }
 
+        requestLocomotiveUpdate();
         setTimeout(() => {
           document
             .getElementById("results")
@@ -518,6 +526,7 @@ createApp({
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      requestLocomotiveUpdate();
     },
     resetDetection() {
       if (this.$refs.fileInput) {
@@ -532,9 +541,11 @@ createApp({
       this.activeTableIndex = 0;
       this.closePreview();
       this.clearCanvas();
+      requestLocomotiveUpdate();
     },
     toggleTable(index) {
       this.activeTableIndex = index;
+      requestLocomotiveUpdate();
     },
     normalizeLabel(label) {
       if (!label) return "";
@@ -641,10 +652,12 @@ createApp({
         const payload = await response.json();
         this.tkpiData = payload.data || {};
         this.tkpiLoaded = true;
+        requestLocomotiveUpdate();
       } catch (error) {
         console.error("Gagal memuat TKPI:", error);
         this.tkpiData = {};
         this.tkpiLoaded = false;
+        requestLocomotiveUpdate();
       }
     },
     getTkpi(fruitKey) {
@@ -677,6 +690,7 @@ createApp({
             top: targetElement.offsetTop - 80,
             behavior: "smooth",
           });
+          setTimeout(requestLocomotiveUpdate, 450);
         }
       });
     });

@@ -8,6 +8,10 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Sora:wght@500;700&display=swap"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/locomotive-scroll@5.0.1/dist/locomotive-scroll.css"
+    />
     <link rel="stylesheet" href="style.css" />
     <link
       rel="stylesheet"
@@ -15,7 +19,7 @@
     />
   </head>
   <body>
-    <div id="app">
+    <div id="app" data-scroll-container>
       <!-- Header -->
       <header class="main-header">
         <div class="container">
@@ -95,31 +99,56 @@
       </header>
 
       <!-- Hero Section -->
-      <section class="hero" id="home">
+      <section
+        class="hero"
+        id="home"
+        data-scroll-section
+        data-section-label="Beranda"
+      >
         <canvas id="matrixRain" class="matrix-rain" aria-hidden="true"></canvas>
         <div class="container">
           <div class="hero-shell">
-            <div class="hero-badge">
+            <div
+              class="hero-badge loco-float"
+              data-scroll
+              data-scroll-speed="0.18"
+            >
               <span class="badge-dot"></span>
               Teknologi YOLOv11 Deep Learning
             </div>
-            <h1 class="hero-title">
+            <h1
+              class="hero-title loco-float"
+              data-scroll
+              data-scroll-speed="0.08"
+            >
               Deteksi <span class="hero-accent">Buah-Buahan Lokal</span>
               <span class="hero-break"
                 >menggunakan AI (Artificial Intelligence)</span
               >
             </h1>
-            <p class="hero-desc">
+            <p
+              class="hero-desc loco-float"
+              data-scroll
+              data-scroll-speed="0.12"
+            >
               Teknologi pembelajaran mesin untuk mengenali buah lokal dengan
               cepat, akurat, dan mudah digunakan di perangkat Anda.
             </p>
-            <div class="hero-actions">
+            <div
+              class="hero-actions loco-float"
+              data-scroll
+              data-scroll-speed="0.16"
+            >
               <a href="#deteksi" class="btn-primary">Mulai Deteksi</a>
               <a href="#cara-kerja" class="btn-secondary"
                 >Pelajari Lebih Lanjut</a
               >
             </div>
-            <div class="hero-stats">
+            <div
+              class="hero-stats loco-float"
+              data-scroll
+              data-scroll-speed="0.1"
+            >
               <div class="stat-card">
                 <div class="stat-value">1.500+</div>
                 <div class="stat-label">Dataset Gambar</div>
@@ -129,8 +158,8 @@
                 <div class="stat-label">Kategori Buah</div>
               </div>
               <div class="stat-card">
-                <div class="stat-value">Top-1</div>
-                <div class="stat-label">Akurasi 92%</div>
+                <div class="stat-value">Akurasi</div>
+                <div class="stat-label">85%</div>
               </div>
               <div class="stat-card">
                 <div class="stat-value">24/7</div>
@@ -142,13 +171,22 @@
       </section>
 
       <!-- Supported Fruits Section -->
-      <section class="supported-fruits reveal-on-scroll" id="supported-fruits">
+      <section
+        class="supported-fruits reveal-on-scroll"
+        id="supported-fruits"
+        data-scroll-section
+        data-section-label="Buah"
+      >
         <div class="container">
-          <div class="section-header">
+          <div
+            class="section-header has-loco-reveal"
+            data-scroll
+            data-scroll-class="is-inview"
+          >
             <h2>Buah yang <span class="title-accent">Didukung</span></h2>
             <p>Buah-Buahan lokal yang bisa dideteksi oleh sistem</p>
           </div>
-          <div class="fruit-grid">
+          <div class="fruit-grid" data-scroll data-scroll-speed="0.04">
             <div class="fruit-card">
               <img src="assets/Apel.png" alt="Apel" />
               <span>Apel</span>
@@ -194,14 +232,27 @@
       </section>
 
       <!-- Cara Kerja Section -->
-      <section class="cara-kerja" id="cara-kerja">
+      <section
+        class="cara-kerja"
+        id="cara-kerja"
+        data-scroll-section
+        data-section-label="Proses"
+      >
         <div class="container">
-          <div class="section-header">
+          <div
+            class="section-header has-loco-reveal"
+            data-scroll
+            data-scroll-class="is-inview"
+          >
             <h2>Cara <span class="title-accent">Kerja</span></h2>
             <p>Deteksi buah dengan mudah dalam 3 langkah sederhana</p>
           </div>
 
-          <div class="cara-kerja-steps process-steps">
+          <div
+            class="cara-kerja-steps process-steps"
+            data-scroll
+            data-scroll-speed="0.03"
+          >
             <div class="step">
               <div class="step-content">
                 <div class="step-icon">
@@ -250,9 +301,18 @@
       </section>
 
       <!-- Teknologi Section -->
-      <section class="teknologi" id="teknologi">
+      <section
+        class="teknologi"
+        id="teknologi"
+        data-scroll-section
+        data-section-label="Teknologi"
+      >
         <div class="container">
-          <div class="section-header">
+          <div
+            class="section-header has-loco-reveal"
+            data-scroll
+            data-scroll-class="is-inview"
+          >
             <h2>
               Didukung <span class="title-accent">Teknologi Terkini</span>
             </h2>
@@ -262,7 +322,7 @@
             </p>
           </div>
 
-          <div class="tech-grid">
+          <div class="tech-grid" data-scroll data-scroll-speed="0.03">
             <div class="tech-card">
               <div class="tech-icon">
                 <i class="fas fa-eye"></i>
@@ -284,7 +344,7 @@
                 Bahasa pemrograman utama untuk pengembangan AI dan pemrosesan
                 data.
               </p>
-              <span class="tech-tag">3.10+</span>
+              <span class="tech-tag">3.12</span>
             </div>
 
             <div class="tech-card">
@@ -311,14 +371,18 @@
             </div>
           </div>
           <div class="arsitektur-block">
-            <div class="section-header">
+            <div
+              class="section-header has-loco-reveal"
+              data-scroll
+              data-scroll-class="is-inview"
+            >
               <h2><span class="title-accent">Arsitektur</span> Sistem</h2>
               <p>
                 Alur kerja end-to-end dari input gambar hingga hasil deteksi.
               </p>
             </div>
 
-            <div class="arch-flow">
+            <div class="arch-flow" data-scroll data-scroll-speed="0.04">
               <div class="arch-card">
                 <div class="arch-icon">
                   <i class="fas fa-image"></i>
@@ -364,20 +428,33 @@
       </section>
 
       <!-- Detection Section -->
-      <section class="detection" id="deteksi">
+      <section
+        class="detection"
+        id="deteksi"
+        data-scroll-section
+        data-section-label="Deteksi"
+      >
         <canvas
           id="fruitRainDetection"
           class="fruit-rain"
           aria-hidden="true"
         ></canvas>
         <div class="container">
-          <div class="section-header">
+          <div
+            class="section-header has-loco-reveal"
+            data-scroll
+            data-scroll-class="is-inview"
+          >
             <h2>Deteksi <span class="title-accent">Buah</span></h2>
             <p>Unggah gambar buah untuk memulai deteksi</p>
           </div>
 
           <div class="detection-container detection-layout">
-            <div class="detection-panel">
+            <div
+              class="detection-panel loco-panel"
+              data-scroll
+              data-scroll-speed="0.03"
+            >
               <div
                 class="upload-area"
                 id="uploadArea"
@@ -458,7 +535,10 @@
               </div>
             </div>
 
-            <div id="results" class="results results-panel">
+            <div
+              id="results"
+              class="results results-panel results-panel-sticky"
+            >
               <h3>Hasil Deteksi</h3>
               <div id="detectionResults" class="results-container">
                 <div v-if="resultsError" class="error-message">
@@ -585,7 +665,7 @@
       </section>
 
       <!-- Footer -->
-      <footer class="main-footer">
+      <footer class="main-footer" data-scroll-section>
         <div class="container">
           <div class="footer-bottom">
             <p>
@@ -601,5 +681,6 @@
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <script src="script.js"></script>
+    <script type="module" src="locomotive.js"></script>
   </body>
 </html>
