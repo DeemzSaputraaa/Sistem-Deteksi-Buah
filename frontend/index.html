@@ -491,15 +491,18 @@
               <div class="preview-container">
                 <div
                   class="image-preview"
-                  :class="{ clickable: imageUrl }"
+                  :class="{ clickable: imageUrl, 'has-image': imageUrl }"
                   @click="openPreview"
                 >
-                  <img
-                    v-show="imageUrl"
-                    :src="imageUrl"
-                    ref="uploadedImage"
-                    @load="onImageLoaded"
-                  />
+                  <div class="preview-stage" v-show="imageUrl">
+                    <img
+                      :src="imageUrl"
+                      ref="uploadedImage"
+                      class="preview-image"
+                      @load="onImageLoaded"
+                    />
+                    <canvas id="canvas" ref="canvas"></canvas>
+                  </div>
                   <div
                     id="placeholderText"
                     class="placeholder"
@@ -508,7 +511,6 @@
                     <i class="fas fa-image"></i>
                     <p>Pratinjau gambar akan muncul di sini</p>
                   </div>
-                  <canvas id="canvas" ref="canvas"></canvas>
                 </div>
 
                 <div class="action-buttons">

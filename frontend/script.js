@@ -387,6 +387,20 @@ createApp({
       };
       reader.readAsDataURL(file);
     },
+    syncCanvasDisplaySize() {
+      const canvas = this.$refs.canvas;
+      const image = this.$refs.uploadedImage;
+      if (!canvas || !image || !image.complete) return;
+
+      const displayWidth = image.clientWidth;
+      const displayHeight = image.clientHeight;
+      if (!displayWidth || !displayHeight) return;
+
+      canvas.style.width = `${displayWidth}px`;
+      canvas.style.height = `${displayHeight}px`;
+      canvas.style.left = `${image.offsetLeft}px`;
+      canvas.style.top = `${image.offsetTop}px`;
+    },
     onImageLoaded() {
       const image = this.$refs.uploadedImage;
       const canvas = this.$refs.canvas;
@@ -394,9 +408,16 @@ createApp({
 
       canvas.width = image.naturalWidth;
       canvas.height = image.naturalHeight;
+      this.syncCanvasDisplaySize();
 
       const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      requestAnimationFrame(() => {
+        this.syncCanvasDisplaySize();
+        if (this.predictions.length) {
+          this.drawResults(this.predictions);
+        }
+      });
       requestLocomotiveUpdate();
     },
     onDragOver() {
@@ -473,9 +494,9 @@ createApp({
       const image = this.$refs.uploadedImage;
       if (!canvas || !image) return;
 
+      this.syncCanvasDisplaySize();
       const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
       const scaleFactor = Math.max(canvas.width, canvas.height) / 1200;
       const fontSize = Math.max(16, Math.round(18 * scaleFactor));
@@ -518,8 +539,23 @@ createApp({
       });
 
       if (this.isPreviewOpen) {
-        this.previewSrc = canvas.toDataURL("image/png");
+        this.previewSrc = this.buildAnnotatedPreview();
       }
+    },
+    buildAnnotatedPreview() {
+      const canvas = this.$refs.canvas;
+      const image = this.$refs.uploadedImage;
+      if (!canvas || !image) return this.imageUrl;
+
+      const exportCanvas = document.createElement("canvas");
+      exportCanvas.width = canvas.width;
+      exportCanvas.height = canvas.height;
+
+      const exportCtx = exportCanvas.getContext("2d");
+      exportCtx.drawImage(image, 0, 0, exportCanvas.width, exportCanvas.height);
+      exportCtx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
+
+      return exportCanvas.toDataURL("image/png");
     },
     clearCanvas() {
       const canvas = this.$refs.canvas;
@@ -559,7 +595,7 @@ createApp({
       if (!this.imageUrl) return;
       const canvas = this.$refs.canvas;
       if (canvas && this.predictions.length) {
-        this.previewSrc = canvas.toDataURL("image/png");
+        this.previewSrc = this.buildAnnotatedPreview();
       } else {
         this.previewSrc = this.imageUrl;
       }
@@ -675,6 +711,15 @@ createApp({
       }
     };
     window.addEventListener("keydown", this.handleKeydown);
+    this.handlePreviewResize = () => {
+      requestAnimationFrame(() => {
+        this.syncCanvasDisplaySize();
+        if (this.predictions.length) {
+          this.drawResults(this.predictions);
+        }
+      });
+    };
+    window.addEventListener("resize", this.handlePreviewResize);
     this.startSlider();
     this.loadTkpi();
 
@@ -701,6 +746,9 @@ createApp({
     }
     if (this.handleKeydown) {
       window.removeEventListener("keydown", this.handleKeydown);
+    }
+    if (this.handlePreviewResize) {
+      window.removeEventListener("resize", this.handlePreviewResize);
     }
     this.stopSlider();
   },

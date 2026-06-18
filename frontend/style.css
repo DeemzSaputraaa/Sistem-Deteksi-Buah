@@ -856,15 +856,15 @@ body.page-loaded .hero-accent::after {
 }
 
 .arch-flow {
-  background: #ffffff;
-  border-radius: 20px;
+  background: transparent;
+  border-radius: 0;
   padding: 2.5rem 2rem;
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   align-items: center;
   gap: 1rem;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-  border: 1px solid #eff3f6;
+  box-shadow: none;
+  border: none;
   margin-top: 3rem;
 }
 
@@ -1138,25 +1138,41 @@ body.page-loaded .hero-accent::after {
 
 .image-preview {
   position: relative;
+  width: 100%;
   max-width: 600px;
   margin: 0 auto 2rem;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  display: inline-block;
-  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f6f8fb;
+  min-height: 300px;
+}
+
+.image-preview.has-image {
+  min-height: 0;
 }
 
 .image-preview.clickable {
   cursor: zoom-in;
 }
 
-.image-preview img {
+.preview-stage {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  line-height: 0;
+}
+
+.preview-image {
   max-width: 100%;
   max-height: 420px;
   width: auto;
   height: auto;
   display: block;
+  margin: 0 auto;
 }
 
 .placeholder {
@@ -1179,10 +1195,10 @@ body.page-loaded .hero-accent::after {
 
 #canvas {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
+  pointer-events: none;
 }
 
 .preview-modal {
@@ -1368,7 +1384,7 @@ body.page-loaded .hero-accent::after {
     position: relative;
     width: 100%;
     max-width: 600px;
-    height: 400px;
+    min-height: 300px;
     margin: 0 auto 25px;
     border: 2px dashed #bdc3c7;
     border-radius: 10px;
@@ -1836,7 +1852,7 @@ body.page-loaded .hero-accent::after {
   }
 
   .tech-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .arch-flow {
@@ -1851,7 +1867,7 @@ body.page-loaded .hero-accent::after {
 
 @media (max-width: 768px) {
   .image-preview {
-    height: 300px;
+    min-height: 240px;
   }
 
   .button-container {
@@ -1933,7 +1949,9 @@ body.page-loaded .hero-accent::after {
   }
 
   .action-buttons {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
   }
 
   .cara-kerja {
@@ -2863,10 +2881,9 @@ body.page-loaded .hero-accent::after {
     max-width: none;
   }
 
-  .image-preview img {
-    width: 100%;
+  .preview-image {
+    max-width: 100%;
     max-height: 360px;
-    object-fit: contain;
   }
 
   .placeholder {
@@ -2875,7 +2892,8 @@ body.page-loaded .hero-accent::after {
   }
 
   .action-buttons {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: stretch;
   }
 
@@ -2940,11 +2958,71 @@ body.page-loaded .hero-accent::after {
     font-size: 1rem;
   }
 
+  .arch-flow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+    padding: 1rem;
+  }
+
   .hero-stats,
   .fruit-grid,
-  .tech-grid,
-  .arch-flow {
-    grid-template-columns: 1fr;
+  .tech-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .arch-card {
+    padding: 1rem 0.75rem;
+    border-radius: 14px;
+  }
+
+  .arch-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    font-size: 1.15rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .arch-card h3 {
+    font-size: 0.95rem;
+  }
+
+  .tech-grid {
+    gap: 0.9rem;
+  }
+
+  .tech-card {
+    padding: 1.3rem 0.75rem 1rem;
+    border-radius: 16px;
+  }
+
+  .tech-card::after {
+    inset: 7px;
+    border-radius: 12px;
+  }
+
+  .tech-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    font-size: 1.2rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .tech-card h3 {
+    font-size: 1rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .tech-card p {
+    font-size: 0.86rem;
+    line-height: 1.45;
+    margin-bottom: 1rem;
+  }
+
+  .tech-tag {
+    padding: 0.28rem 0.72rem;
+    font-size: 0.76rem;
   }
 
   .stat-card {
@@ -3000,7 +3078,7 @@ body.page-loaded .hero-accent::after {
     min-height: 210px;
   }
 
-  .image-preview img {
+  .preview-image {
     max-height: 280px;
   }
 
@@ -3230,8 +3308,7 @@ html.has-scroll-smooth {
 .loco-section.is-active-section .fruit-card,
 .loco-section.is-active-section .tech-card,
 .loco-section.is-active-section .arch-card,
-.loco-section.is-active-section .stat-card,
-.loco-section.is-active-section .step-content {
+.loco-section.is-active-section .stat-card {
   box-shadow: 0 20px 36px rgba(15, 23, 42, 0.1);
 }
 
@@ -3248,7 +3325,9 @@ html.has-scroll-smooth {
 
 .step-content {
   padding: 1rem 0.6rem 0;
-  border-radius: 22px;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   transition:
     transform 0.25s ease,
     background-color 0.25s ease,
@@ -3256,8 +3335,8 @@ html.has-scroll-smooth {
 }
 
 .step:hover .step-content {
-  background: linear-gradient(180deg, rgba(46, 204, 113, 0.08), rgba(255, 255, 255, 0));
-  box-shadow: 0 18px 34px rgba(46, 204, 113, 0.08);
+  background: transparent;
+  box-shadow: none;
 }
 
 .results-panel-sticky {
